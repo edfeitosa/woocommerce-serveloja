@@ -38,6 +38,9 @@ if (!class_exists('WC_Serveloja')) {
                 // truncate nas tabelas quando desativa plugin
                 $this->truncate_db_table();
                 register_deactivation_hook(__FILE__, 'delete_db_table');
+
+                // link no menu principal do wordpress
+                $this->menu();
             } else {
 				add_action('admin_notices', array( $this, 'woocommerce_missing_notice'));
 			}
@@ -53,13 +56,17 @@ if (!class_exists('WC_Serveloja')) {
         // adiciona link na página de edição de plugins
 		public function plugin_action_links( $links ) {
 			$plugin_links   = array();
-			$plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=serveloja' ) ) . '">' . __( 'Configurações', 'woocommerce-serveloja' ) . '</a>';
+			$plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=serveloja' ) ) . '">' . __( 'Woocommerce', 'woocommerce-serveloja' ) . '</a>';
+			$plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=index' ) ) . '">Configurações</a>';
 			return array_merge( $plugin_links, $links );
         }
 
 		private function includes() {
 			include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
 			include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
+			include_once dirname( __FILE__ ) . '/templates/configuracoes.php';
+			include_once dirname( __FILE__ ) . '/templates/cartoes.php';
+			include_once dirname( __FILE__ ) . '/templates/index.php';
         }
         
 		public function add_gateway($methods) {
@@ -101,6 +108,15 @@ if (!class_exists('WC_Serveloja')) {
             $wpdb->query("TRUNCATE TABLE $tabela_cartoes");
             delete_option("serveloja");
             delete_site_option('serveloja');
+        }
+
+        private function menu() {
+            add_action('admin_menu', 'addCustomMenuItem');
+            function addCustomMenuItem() {
+                add_menu_page('Serveloja', 'Serveloja', 'manage_options', 'index', 'function_index', 'dashicons-businessman', 6);
+                add_submenu_page('index', 'Serveloja', 'Configurações', 'manage_options', 'configuracoes', 'function_configuracoes');
+                add_submenu_page('index', 'Serveloja', 'Cartões', 'manage_options', 'cartoes', 'function_cartoes');
+            }
         }
         
     }
