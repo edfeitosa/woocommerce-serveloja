@@ -14,7 +14,6 @@
     font-size: 14px;
     border-radius: 3px;
     border: 1px solid #999 !important;
-    background-color: #f6f6f6 !important;
     width: 60%;
     -moz-box-shadow: inset 2px 2px 4px #ccc;
     -webkit-box-shadow: inset 2px 2px 4px #ccc;
@@ -26,7 +25,6 @@
     font-size: 14px;
     border-radius: 3px;
     border: 1px solid #999;
-    background-color: #f6f6f6;
     width: 50%;
     height: 70px;
     -moz-box-shadow: inset 2px 2px 4px #ccc;
@@ -40,12 +38,24 @@
     font-size: .875rem;
     border-radius: 3px;
     border: 1px solid #999;
-    background-color: #f6f6f6;
     -moz-box-shadow: inset 2px 2px 4px #eee;
     -webkit-box-shadow: inset 2px 2px 4px #eee;
     box-shadow: inset 2px 2px 4px #eee;
     width: 60%;
     height: 35px !important;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.select_menor {
+    padding: 1px 3px 4px 4px !important;
+    font-size: .875rem;
+    border-radius: 3px;
+    border: 1px solid #999;
+    -moz-box-shadow: inset 2px 2px 4px #eee;
+    -webkit-box-shadow: inset 2px 2px 4px #eee;
+    box-shadow: inset 2px 2px 4px #eee;
+    width: 60%;
     margin-top: 10px;
     margin-bottom: 0px;
 }

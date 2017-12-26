@@ -12,7 +12,7 @@ if (!defined('ABSPATH') ) {
     exit; // Exit if accessed directly.
 }
 
-if (!class_exists('WC_Serveloja')) {
+if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
 
     class WC_Serveloja {
 
@@ -32,12 +32,10 @@ if (!class_exists('WC_Serveloja')) {
                 define('WP_UNINSTALL_PLUGIN', PASTA_PLUGIN.'uninstall.php');
 
                 // cria tabelas no banco
-                $this->create_db_table();
-                register_activation_hook(__FILE__, 'create_db_table');
+                register_activation_hook(__FILE__, WC_Serveloja::create_db_table());
 
                 // truncate nas tabelas quando desativa plugin
-                $this->truncate_db_table();
-                register_deactivation_hook(__FILE__, 'delete_db_table');
+                register_deactivation_hook(__FILE__, WC_Serveloja::truncate_db_table());
 
                 // link no menu principal do wordpress
                 $this->menu();
@@ -58,12 +56,12 @@ if (!class_exists('WC_Serveloja')) {
 			$plugin_links   = array();
 			$plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=serveloja' ) ) . '">' . __( 'Woocommerce', 'woocommerce-serveloja' ) . '</a>';
 			$plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=index' ) ) . '">Configurações</a>';
-			return array_merge( $plugin_links, $links );
+			return array_merge($plugin_links, $links);
         }
 
 		private function includes() {
 			include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
-			include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
+			include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-funcoes.php';
 			include_once dirname( __FILE__ ) . '/templates/configuracoes.php';
 			include_once dirname( __FILE__ ) . '/templates/cartoes.php';
 			include_once dirname( __FILE__ ) . '/templates/index.php';

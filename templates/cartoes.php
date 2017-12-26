@@ -3,10 +3,8 @@
     <!-- scripts e estilos -->
     <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/style.css" rel="stylesheet" />
     <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/forms.css" rel="stylesheet" />
+    <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/tabelas.css" rel="stylesheet" />
     <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
-
-    <?php require_once (PASTA_PLUGIN.'includes/class-wc-serveloja.php');
-    $funcoes = new WC_Serveloja; ?>
 
     <!-- cabeçalho -->
     <div id="headerPlugin">
@@ -17,6 +15,13 @@
         </div>
     </div>
 
+    <?php $funcoes = new WC_Serveloja_Funcoes;
+    $cartoes_salvos = $funcoes::cartoes_salvos();
+    print_r($cartoes_salvos);
+    if (isset($_POST["salvar_cartoes"])) {
+        echo $funcoes::insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
+    } ?>
+
     <h1>Cartões de Crédito</h1>
     <h2>
         Selecione as bandeiras com as quais você irá receber pagamentos
@@ -24,12 +29,16 @@
 
     <div class="clear"></div>
 
-    <div class="painel">
+    <p><i>Selecione os cartões que você utilizará para receber pagamentos em sua loja virtual. Após concluir, clique no botão <b>"Salvar"</b>.</i></p>
 
-        <?php $cartoes = $funcoes::lista_cartoes_api("Cartao/ObterBandeirasValidas", "get", ""); ?>
-
+    <?php $cartoes = $funcoes::lista_cartoes(); ?>
+    
+    <form method="post" action="" name="cartoes">
+        <?php echo $funcoes::tabela($cartoes); ?>
         <div class="clear"></div>
+        <input type="submit" class="submit" name="salvar_cartoes" value="Salvar" name="salvar" />
+    </form>
 
-    </div>
+    <div class="clear"></div>
 
 <?php } ?>

@@ -114,8 +114,6 @@ h3 {
     height: 190px;
     text-align: center;
     margin: 5px 25px 0px 0px;
-    background-color: #fff;
-    border: 1px solid #ddd;
     padding: 20px 20px 20px 20px;
     border-radius: 5px;
 }
@@ -131,4 +129,12 @@ h3 {
 
 .icon h2 {
     margin: 10px 0px 0px 0px;
+}
+
+.img_tabela {
+    float: left;
+    width: 40px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }

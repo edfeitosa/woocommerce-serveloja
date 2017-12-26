@@ -1,0 +1,108 @@
+/*
+    Desenvolvido por TI Serveloja, dezembro de 2017
+*/
+
+.tabela
+{
+    padding: 0px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 3px !important;
+    width: 98%;
+    font-size: .875rem;
+    padding: 5px;
+}
+
+    .tabela a, .tabela a:hover, .tabela a:visited
+    {
+        text-decoration: none;
+    }
+
+    .tabela thead
+    {
+        font-size: .875rem;
+        font-weight: bold;
+        background-color: #ccc;
+        color: #000;
+        padding: 10px 0px 10px 0px;
+    }
+
+    .tabela td
+    {
+        height: 20px;
+    }
+
+    .tabela .celulathead
+    {
+        padding: 10px 0px 10px 10px;
+    }
+
+    .tabela .separabotao
+    {
+        margin-right: 20px;
+    }
+
+    .tabela .botaoExclusao
+    {
+        cursor: pointer;
+    }
+
+    .tabela .celulabody
+    {
+        height: 40px;
+        padding: 10px 0px 10px 10px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .tabela .celulatotal
+    {
+        padding: 15px 0px 15px 10px;
+        border-top: 1px solid rgba(255, 0, 0, 1);
+        border-bottom: 1px solid rgba(255, 0, 0, 1);
+        background-color: rgba(255, 0, 0, 0.2);
+        color: rgba(255, 0, 0, 1);
+        font-weight: bold;
+    }
+
+    .tabela .negrito
+    {
+        font-weight: bold;
+    }
+
+    .tabela .celulausuario
+    {
+        height: 40px;
+    }
+
+    .tabela .alinhamento
+    {
+        vertical-align: top;
+    }
+
+    .tabela .botao
+    {
+        margin-right: 5px;
+        width: 30px !important;
+    }
+
+    .tabela .separabotaomenor
+    {
+        margin-right: 10px;
+    }
+
+    .tabela .celulacentralizar
+    {
+        text-align: center;
+    }
+
+    .tabela .paddingleft
+    {
+        padding-left: 5px;
+    }
+
+    .tabela .nopaddingleft
+    {
+        background-color: #fff;
+        padding: 10px 10px 10px 0px;
+        border-bottom: 1px solid #b8c9d1;
+    }
