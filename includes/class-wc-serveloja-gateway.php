@@ -21,6 +21,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
         // veriaveis do form
         $this->title = $this->get_option('title');
+        $this->checkbox = $this->get_option('checkbox');
 
     }
 

@@ -110,7 +110,7 @@ h3 {
 
 .icon {
     float: left;
-    width: 18%;
+    width: 16%;
     height: 190px;
     text-align: center;
     margin: 5px 25px 0px 0px;
@@ -135,6 +135,7 @@ h3 {
     float: left;
     width: 40px;
     margin-right: 10px;
+    background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 3px;
 }

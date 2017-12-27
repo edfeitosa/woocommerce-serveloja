@@ -188,21 +188,31 @@ class WC_Serveloja_Funcoes {
     }
 
     // tabela
-    private function parcelas($quant) {
-        $retorno = '';
-        $retorno .= '<select name="car_parcelas[]" class="select_menor" style="margin-top: 0px;">';
+    private function parcelas($quant, $bandeira, $parcelas) {
+        $retorno = '<select name="car_parcelas[]" class="select_menor" style="margin-top: 0px;">';
         for ($i = 1; $i <= intval($quant); $i++) {
+            $selected = '';
+            if (in_array($i . '-' . $bandeira, $parcelas)) {
+                $selected = 'selected';
+            }
             if ($i == 1) {
-                $retorno .= '<option value="' . $i . '">Apenas uma vez</option>"';
+                $retorno .= '<option value="' . $i . '-' . $bandeira . '" ' . $selected . '>Apenas uma vez</option>"';
             } else {
-                $retorno .= '<option value="' . $i . '">Em ' . $i . ' vezes</option>"';
+                $retorno .= '<option value="' . $i . '-' . $bandeira . '" ' . $selected . '>Em ' . $i . ' vezes</option>"';
             }
         }
         $retorno .= '</select>';
         return $retorno;
     }
 
-    public function tabela($cartoes) {
+    public function tabela_cartoes($cartoes, $cartoes_banco) {
+        $quant_parcelas = 12;
+        $array_cod = array();
+        $array_parcelas = array();
+        foreach ($cartoes_banco as $row) {
+            array_push($array_cod, $row->car_cod);
+            array_push($array_parcelas, $row->car_parcelas);
+        }
         $retorno = '<table cellspacing="0" cellpadding="0" class="tabela">' .
         '<thead>' .
         '<tr>' .
@@ -212,18 +222,26 @@ class WC_Serveloja_Funcoes {
         '</tr>' .
         '</thead>';
         for ($i = 0; $i < count($cartoes); $i++) {
-            if ($i % 2 == 0) { $style = ""; } else { $style = "style='background-color: #f1f1f1;'"; }
+            if ($i % 2 == 0) { $css = ''; } else { $css = 'impar'; }
+            // verifica se existe item em array
+            if (in_array($cartoes[$i]['CodigoBandeira'], $array_cod)) {
+                $css = 'no_banco';
+                $checado = 'checked';
+            } else {
+                $css = $css;
+                $checado = '';
+            }
             $retorno .= '<tr>' .
-            '<td class="celulabody" ' . $style .'>' . 
+            '<td class="celulabody ' . $css . '">' . 
             '<img class="img_tabela" src="' . PASTA_PLUGIN . 'assets/images/' . strtolower($cartoes[$i]["NomeBandeira"]) . '.png" title="' . $cartoes[$i]["NomeBandeira"] .'" alt="' . strtolower($cartoes[$i]["NomeBandeira"]) . '" />' .
             $cartoes[$i]["NomeBandeira"] . 
             '</td>' .
-            '<td class="celulabody celulacentralizar" ' . $style .'><input type="checkbox" name="posicao[]" value="' . $i .'" /> Sim' .
+            '<td class="celulabody celulacentralizar ' . $css . '"><input ' . $checado . ' type="checkbox" name="posicao[]" value="' . $i .'" /> Sim' .
             '<input type="hidden" name="car_bandeira[]" value="' . $cartoes[$i]["NomeBandeira"] . '" />' .
             '<input type="hidden" name="car_cod[]" value="' . $cartoes[$i]["CodigoBandeira"] . '" />' .
             '</td>' .
-            '<td class="celulabody celulacentralizar" ' . $style .'>' .
-            WC_Serveloja_Funcoes::parcelas(12) .
+            '<td class="celulabody celulacentralizar ' . $css . '">' .
+            WC_Serveloja_Funcoes::parcelas($quant_parcelas, $cartoes[$i]["NomeBandeira"], $array_parcelas) .
             '</td>' .
             '</tr>';
         }

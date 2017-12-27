@@ -17,7 +17,6 @@
 
     <?php $funcoes = new WC_Serveloja_Funcoes;
     $cartoes_salvos = $funcoes::cartoes_salvos();
-    print_r($cartoes_salvos);
     if (isset($_POST["salvar_cartoes"])) {
         echo $funcoes::insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
     } ?>
@@ -34,7 +33,7 @@
     <?php $cartoes = $funcoes::lista_cartoes(); ?>
     
     <form method="post" action="" name="cartoes">
-        <?php echo $funcoes::tabela($cartoes); ?>
+        <?php echo $funcoes::tabela_cartoes($cartoes, $cartoes_salvos); ?>
         <div class="clear"></div>
         <input type="submit" class="submit" name="salvar_cartoes" value="Salvar" name="salvar" />
     </form>

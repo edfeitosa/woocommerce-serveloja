@@ -5,6 +5,18 @@
 <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/forms.css" rel="stylesheet" />
 <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
 
+<?php $funcoes = new WC_Serveloja_Funcoes ?>
+
+<?php // verifica se já existem informações sobre a aplicação
+  $dados = $funcoes::aplicacao();
+  $apl_id = ($dados == "0") ? "0" : $dados[0]->apl_id;
+  $apl_nome = ($dados == "0") ? "" : $dados[0]->apl_nome;
+  $apl_token = ($dados == "0") ? "" : $dados[0]->apl_token;
+  $apl_prefixo = ($dados == "0") ? "" : $dados[0]->apl_prefixo;
+  $apl_email = ($dados == "0") ? "" : $dados[0]->apl_email;
+  $apl_ambiente = ($dados == "0") ? "" : $dados[0]->apl_ambiente;
+?>
+
 <!-- cabeçalho -->
 <div id="headerPlugin">
     <div id="logo">
@@ -13,6 +25,25 @@
       </a>
     </div>
 </div>
+
+<?php // post configurações principais
+  if (isset($_POST["salvar_config"])) {
+    // atribui os valores do post às variaveis quando houver
+    $apl_nome = $_POST["apl_nome"];
+    $apl_token = $_POST["apl_token"];
+    $apl_prefixo = $_POST["apl_prefixo"];
+    $apl_email = $_POST["apl_email"];
+    $apl_ambiente = $_POST["apl_ambiente"];
+    // executa
+    echo $funcoes::save_configuracoes($_POST["apl_nome"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_ambiente"], $_POST["apl_id"]);
+    $dados = $funcoes::aplicacao();
+  } ?>
+
+  <?php // post cartões
+  if (isset($_POST["salvar_cartoes"])) {
+    // executa
+    echo $funcoes::insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
+  } ?>
 
 <h1>Configurações</h1>
 <h2>

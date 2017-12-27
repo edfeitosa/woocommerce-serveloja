@@ -27,7 +27,7 @@
         <br />
         <h2>Configurações</h2>
         <div class="subtitulo">
-            Configure sua aplicação e depois comece a usar
+            Configure sua aplicação antes de começar a usar
         </div>
     </div>
 
