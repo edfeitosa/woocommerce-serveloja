@@ -6,7 +6,6 @@ if (!defined( 'ABSPATH' )) {
 class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     public function __construct() {
-
         $this->id                 = 'serveloja';
         $this->icon               = apply_filters('woocommerce_serveloja_icon', plugins_url( 'assets/images/serveloja.png', plugin_dir_path( __FILE__ )));
         $this->method_title       = __('Serveloja', 'woocommerce-serveloja');
@@ -23,6 +22,11 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         $this->title = $this->get_option('title');
         $this->checkbox = $this->get_option('checkbox');
 
+        $this->has_fields = true;
+
+        // actions principais
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options') );
+        //add_action('woocommerce_receipt_' . $this->id, array( $this, 'receipt_page'));
     }
 
     function init_form_fields() {
@@ -41,24 +45,36 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         );
     }
 
-    /* public function admin_options() { ?>
-
-        <?php $this->save_info(); ?>
-
-        <h2><?php _e('Serveloja', 'woocommerce-serveloja'); ?></h2>
-        <p><?php _e('Aceite pagamentos com cartões de crédito através da Serveloja em sua loja virtual.', 'woocommerce-serveloja'); ?></p>
-        
-        <table class="form-table">
-            <?php $this->generate_settings_html(); ?>
-        </table>
-        
-        <?php
+    public function payment_fields() {
+        wc_get_template( 'pagina-recebimento.php', array(), 'woocommerce/serveloja/', WC_Serveloja::get_templates_path() );
     }
 
-    private function save_info() {
-        if(isset($_POST['woocommerce_serveloja_cartoes'])) {
-            print_r($_POST['woocommerce_serveloja_cartoes']);
-        }
-    } */
+    function process_payment($order_id) {
+        global $woocommerce;
+        $order = new WC_Order($order_id);
+    
+        /* grava status
+        $order->update_status('on-hold', __('Pagamento realizado através da Serveloja, com cartão crédito', 'woocommerce-serveloja'));
+    
+        // reduz estoque, se houver
+        $order->reduce_order_stock();
+    
+        // remove produtos do carrinho após conclusão
+        $woocommerce->cart->empty_cart(); */
+    
+        // redirecionamento após conclusão
+        return array('result' => 'success', 'redirect' => add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink('http://www.globo.com'))));
+        /* return array(
+            'result' => 'success',
+            'redirect' => add_query_arg(
+                'order', $order->id, 
+                add_query_arg(
+                    'key',
+                    $order->order_key,
+                    get_permalink(get_option())
+                )
+            )
+        ); */
+    }
     
 } ?>

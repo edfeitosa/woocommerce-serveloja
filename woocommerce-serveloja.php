@@ -16,6 +16,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     if (!class_exists('WC_Serveloja')) {
         class WC_Serveloja {
 
+            const VERSION = '1.0';
+
             protected static $instance = null;
 
             private function __construct() {
@@ -39,6 +41,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 } else {
                     add_action('admin_notices', array( $this, 'woocommerce_missing_notice'));
                 }
+            }
+
+            public static function get_templates_path() {
+                return plugin_dir_path( __FILE__ ) . 'templates/';
             }
 
             public static function get_instance() {

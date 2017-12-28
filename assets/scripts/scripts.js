@@ -28,4 +28,3 @@ function controle_exibicao(exibir, ocultar, ativo, inativo) {
     this.botao_ativo(ativo);
     this.botao_inativo(inativo);
 }
-  
