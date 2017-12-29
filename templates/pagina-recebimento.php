@@ -1,5 +1,7 @@
-<?php if (!defined( 'ABSPATH')) { exit; } ?>
+<?php if (!defined('ABSPATH')) { exit; } ?>
 
-<p>Use o plugin da Serveloja para realizar seus pagamentos com cartão de crédito</p>
-
-<p><?php echo $order->order_total; ?></p>
+<script type="text/javascript">
+    $(document).ready(function() {
+        alert("Funciona!");
+    });
+</script>

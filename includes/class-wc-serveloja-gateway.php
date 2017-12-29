@@ -10,8 +10,10 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         $this->icon               = apply_filters('woocommerce_serveloja_icon', plugins_url( 'assets/images/serveloja.png', plugin_dir_path( __FILE__ )));
         $this->method_title       = __('Serveloja', 'woocommerce-serveloja');
         $this->method_description = __('Aceite pagamentos com cartões de crédito através da Serveloja em sua loja virtual.', 'woocommerce-serveloja');
+        $this->title              = 'Serveloja';
+        $this->description        = 'Realize pagamentos com cartões de crédito através da Serveloja.';
         $this->order_button_text  = __('Pagar agora', 'woocommerce-serveloja');
-        
+
         // forms
         $this->init_form_fields();
 
@@ -19,14 +21,13 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         $this->init_settings();
 
         // veriaveis do form
-        $this->title = $this->get_option('title');
         $this->checkbox = $this->get_option('checkbox');
 
-        $this->has_fields = true;
+        // $this->has_fields = true;
 
         // actions principais
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options') );
-        //add_action('woocommerce_receipt_' . $this->id, array( $this, 'receipt_page'));
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        //add_action( 'wp_enqueue_scripts', array( $this, 'receipt_page' ) );
     }
 
     function init_form_fields() {
@@ -45,9 +46,9 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         );
     }
 
-    public function payment_fields() {
+    /* public function payment_fields() {
         wc_get_template( 'pagina-recebimento.php', array(), 'woocommerce/serveloja/', WC_Serveloja::get_templates_path() );
-    }
+    } */
 
     function process_payment($order_id) {
         global $woocommerce;
@@ -63,7 +64,17 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         $woocommerce->cart->empty_cart(); */
     
         // redirecionamento após conclusão
-        return array('result' => 'success', 'redirect' => add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink('http://www.globo.com'))));
+
+        if (isset($_POST['finalizar'])) {
+
+        } else {
+            return array(
+                'result' => 'success',
+                'execute' => $this->receipt_page()
+            );
+        }
+
+
         /* return array(
             'result' => 'success',
             'redirect' => add_query_arg(
@@ -76,5 +87,14 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             )
         ); */
     }
+
+    public function receipt_page($order_id) {
+        global $woocommerce;
+        $order = new WC_Order($order_id);
+        wc_get_template('pagina-recebimento.php', array(
+            'cancel_order_url' => $order->get_cancel_order_url()
+        ), 'woocommerce/serveloja/', WC_Serveloja::get_templates_path());
+    }
+
     
 } ?>
