@@ -1,4 +1,14 @@
-<?php 
+<?php
+/**
+ * WooCommerce Serveloja Gateway class.
+ *
+ * Funções utilizadas em Woocommerce Serveloja.
+ *
+ * @class   WC_Serveloja_Funcoes
+ * @version 1.0.0
+ * @author  Eduardo Feitosa
+ */
+
 if (!defined( 'ABSPATH' )) {
     exit;
 }

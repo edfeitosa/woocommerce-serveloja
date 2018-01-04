@@ -20,6 +20,25 @@
     box-shadow: inset 2px 2px 4px #ccc;
 }
 
+.input_maior {
+    width: 100%;
+}
+
+.input_sborda {
+    border: none !important;
+    -moz-box-shadow: inset 2px 2px 4px #f1f1f1 !important;
+    -webkit-box-shadow: inset 2px 2px 4px #f1f1f1 !important;
+    box-shadow: inset 2px 2px 4px #f1f1f1 !important;
+}
+
+.caixa_alta {
+    text-transform: uppercase;
+}
+
+.margin_top {
+    margin-top: 5px;
+}
+
 .textarea {
     padding: 7px;
     font-size: 14px;
@@ -70,7 +89,7 @@ input[type="submit"] {
     border: 1px solid #999;
     box-shadow: none;
     border-radius: 3px;
-	  float: left;
+	float: left;
     margin-top: 25px;
 }
 
@@ -197,4 +216,36 @@ input[type='file'] {
     border: 1px solid #999;
     border-radius: 3px;
     margin: 5px 10px 5px 0px;
+}
+
+.input_verde {
+    background-color: #224527 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.botao {
+    padding: 7px;
+    width: 120px;
+    font-weight: bold;
+    color: #666;
+    cursor: pointer;
+    background-color: #e6e6e6;
+    border: 1px solid #999;
+    box-shadow: none;
+    border-radius: 3px;
+	float: left;
+    margin-top: 25px;
+    text-align: center;
+}
+
+.input_vermelho {
+    background-color: #f00 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.float_right {
+    float: right !important;
+    margin-left: 5px;
 }

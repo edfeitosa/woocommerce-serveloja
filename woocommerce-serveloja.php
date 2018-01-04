@@ -4,11 +4,11 @@
  * Plugin URI: http://www.serveloja.com.br
  * Description: Plugin para realização de pagamentos via lojas virtuais com Woocommerce, utilizando soluções fornecidas pela Serveloja.
  * Version: 1.0
- * Author: TI Serveloja
+ * Author: Eduardo Feitosa - TI Serveloja
  * Author URI: http://www.serveloja.com.br
 **/
 
-if (!defined('ABSPATH') ) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
@@ -24,7 +24,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 if (class_exists('WC_Payment_Gateway')) {
                     $this->includes();
                     add_filter('woocommerce_payment_gateways', array($this, 'add_gateway'));
-                    // add_filter('woocommerce_cancel_unpaid_order', array( $this, 'stop_cancel_unpaid_orders' ), 10, 2);
                     add_filter('plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links'));
                 
                     // define diretório do plugin
@@ -65,6 +64,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             private function includes() {
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-funcoes.php';
+                include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-api.php';
                 include_once dirname( __FILE__ ) . '/templates/configuracoes.php';
                 include_once dirname( __FILE__ ) . '/templates/cartoes.php';
                 include_once dirname( __FILE__ ) . '/templates/index.php';

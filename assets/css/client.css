@@ -1,0 +1,158 @@
+/*
+    Desenvolvido por TI Serveloja, janeiro de 2018
+    Eduardo Feitosa
+*/
+
+p {
+    margin: 0px 0px 12px 0px;
+}
+
+#bgModal {
+    position: fixed;
+    background-image: url("../images/bgModal.png");
+    width: 100%;
+    height: 130%;
+    z-index: 9999;
+    left: 0px;
+    top: 0px;
+}
+
+/* modal */
+.modal {
+    position: fixed;
+    width: 260px;
+    height: 180px;
+    padding: 10px;
+    background-color: #fff;
+    left: 50%;
+    top: 50%;
+    margin: -150px 0px 0px -145px;
+    border: 4px solid #999;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 12000;
+}
+
+#icone {
+    float: left;
+    width: 48px;
+    height: 48px;
+    background-size: 48px;
+    background-repeat: no-repeat;
+    margin-right: 10px;
+}
+
+#icone img {
+    width: 100%;
+}
+
+#cabecalho {
+    background-color: #999;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 10px;
+    width: 300px;
+    margin: -11px 0px 10px -11px;
+}
+
+.modal .ok {
+    position: absolute;
+    width: 80px;
+    padding: 5px 10px 5px 10px;
+    background-color: #ddd;
+    border: 1px solid #999;
+    color: #666;
+    font-size: .875rem;
+    font-weight: bold;
+    border-radius: 3px;
+    bottom: 0px;
+    right: 0px;
+    margin: 0px 10px 10px 0px;
+    cursor: pointer;
+    text-align: center;
+    background-image: linear-gradient(to bottom, #fff, #ccc 130%);
+}
+
+.resposta {
+    font-size: .8125rem;
+    text-align: left;
+    height: 110px;
+    overflow: hidden;
+}
+
+.sombra {
+    box-shadow: 0px 0px 7px #333;
+    -webkit-box-shadow: 0px 0px 7px #333;
+    -moz-box-shadow: 0px 0px 7px #333;
+}
+
+.coluna25 {
+    float: left;
+    width: 24%;
+    margin-right: 3px;
+}
+
+/* form pagamento */
+#formPagamento {
+    position: fixed;
+    width: 640px;
+    height: 480px;
+    padding: 10px;
+    background-color: #fff;
+    left: 50%;
+    top: 50%;
+    margin: -250px 0px 0px -310px;
+    border: 4px solid #008316;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 11000;
+}
+
+#formPagamento #cabecalho {
+    float: left;
+    width: 110%;
+    height: 55px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #224527;
+}
+
+#formPagamento #cabecalho #cancelar {
+    float: right;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    margin-right: 40px;
+}
+
+#formPagamento #cabecalho #logo {
+    float: left;
+    width: 100px;
+}
+
+#formPagamento #cabecalho #logo img {
+    width: 100%;
+}
+
+#formPagamento #colunaEsq {
+    width: 35%;
+    height: 360px;
+    border-radius: 4px;
+    margin-right: 10px;
+    background-color: #f1f1f1;
+    padding: 10px;
+    color: #666;
+    float: left;
+}
+
+.clear {
+    clear: both;
+    visibility: hidden;
+}
+
+#formPagamento #colunaDir {
+    float: left;
+    padding: 0px;
+    width: 63%;
+}
