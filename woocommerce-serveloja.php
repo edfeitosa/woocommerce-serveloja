@@ -22,6 +22,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
             private function __construct() {
                 if (class_exists('WC_Payment_Gateway')) {
+                    
                     $this->includes();
                     add_filter('woocommerce_payment_gateways', array($this, 'add_gateway'));
                     add_filter('plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links'));

@@ -91,20 +91,33 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     private function cpf_cnpj($id) {
         wc_enqueue_js('
-            $("#' + $id + '").live("keydown", function(){
-                try {
-                    $("#' + $id + '").unmask();
-                } catch (e) {}
-            
-                var tamanho = $("#' + $id + '").val().length;
-            
-                if(tamanho < 11){
-                    $("#' + $id + '").mask("999.999.999-99");
-                } else {
-                    $("#' + $id + '").mask("99.999.999/9999-99");
-                }                   
+            $(document).ready(function () {
+                $("#' . $id . '").mask("999.999.999-99?99999");
+                $("#' . $id . '").live("keyup", function (e) {
+                    var query = $(this).val().replace(/[^a-zA-Z 0-9]+/g,"");
+                    if (query.length == 11) {
+                        $("#' . $id . '").mask("999.999.999-99?99999");
+                    }
+                    if (query.length == 14) {
+                        $("#' . $id . '").mask("99.999.999/9999-99");
+                    }
+                });
             });
         ');
+    }
+
+    private function lista_cartoes() {
+        $cartoes_banco = WC_Serveloja_Funcoes::cartoes_salvos();
+        $lista = "<table cellspacing='0' cellpadding='0' class='tabela'>";
+            foreach ($cartoes_banco as $row) {
+                $lista .= "<tr>" .
+                    "<td class='celulabody' style='width: 20%;'></td>" .
+                    "<td class='celulabody' style='width: 70%;'>" . ucfirst(strtolower($row->car_bandeira)) . "</td>" .
+                    "<td class='celulabody' style='width: 10%;'></td>" .
+                "</tr>";
+            }
+        $lista .= "</table>";
+        return $lista;
     }
 
     private function modal_payment($order_id) {
@@ -116,7 +129,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 "<div id=\'cabecalho\'>" +
                     "<div id=\'logo\'><img src=\'' . PASTA_PLUGIN .'assets/images/serveloja.png\' alt=\'serveloja\' /></div>" +
                     "<div id=\'cancelar\' title=\'Cancelar e voltar para o carrinho\'>" +
-                        "<a href=\'' . esc_url( $order->get_cancel_order_url() ) . '\'>" +
+                        "<a href=\'' . esc_url($order->get_cancel_order_url()) . '\'>" +
                             "<img src=\'' . PASTA_PLUGIN .'assets/images/fechar.png\' alt=\'serveloja\' style=\'width:100%;\' />" +
                         "</a>" +
                     "</div>" +
@@ -124,7 +137,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 "<div class=\'clear\'></div>" +
                 "<p>Todos os campos marcados com <b>(*)</b>, são de preenchimento obrigatório</p>" +
                 "<div id=\'colunaEsq\'>" +
-                "" +
+                    "<div class=\'tituloInput\' style=\'margin-top: -5px;\'>Selecione um cartão (*)</div>" +
+                    "' . $this->lista_cartoes() . '" +
                 "</div>" +
                 "<div id=\'colunaDir\'>" +
                     "<div class=\'tituloInput\' style=\'margin-top: 0px;\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
@@ -176,6 +190,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         return '<div id="bgModal"></div>';
     }
     
+    // processa pagamento
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
         return array(
@@ -188,9 +203,9 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
     public function receipt_page($order_id) {
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/client.css" rel="stylesheet" />';
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/forms.css" rel="stylesheet" />';
+        echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/tabela.css" rel="stylesheet" />';
         echo '<script type="text/javascript" src="' . PASTA_PLUGIN . 'assets/scripts/maskedinput.js"></script>';
         $order = wc_get_order( $order_id );
-        // form
         echo $this->generate_serveloja_form($order_id);
     }
     
