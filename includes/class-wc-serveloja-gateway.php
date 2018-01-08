@@ -106,14 +106,62 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
+    private function mascaraValor() {
+        wc_enqueue_js('
+            function mascaraValor(value, str_cifrao) {
+                return str_cifrao + " " + value.formatMoney(2, ",", ".");
+            }
+
+            Number.prototype.formatMoney = function (c, d, t) {
+                var n = this,
+                    c = isNaN(c = Math.abs(c)) ? 2 : c,
+                    d = d == undefined ? "." : d,
+                    t = t == undefined ? "," : t,
+                    s = n < 0 ? "-" : "",
+                    i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+                    j = (j = i.length) > 3 ? j % 3 : 0;
+                return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+            };
+        ');
+    }
+
+    private function detalhes_cartao($total) {
+        echo $this->mascaraValor();
+        wc_enqueue_js('
+            $(document).ready(function () {
+                $("#exibeCartao").hide();
+                $("input[name=bandeira_cartao]:checked").live("click", function() {
+                    var isChecked = $(this).val();
+                    if (isChecked) {
+                        $("#exibeCartao").show();
+                        var valor = ' . $total . ';
+                        var qtd = isChecked.split("-");
+                        var parcela = valor / qtd[0];
+                        var imagem = "<img class=\'img_detalhes\' src=\'' . PASTA_PLUGIN .'assets/images/" + qtd[1].toLowerCase() + ".png\' alt=\'" + qtd[1].toLowerCase() + "\' />";
+                        var select = "<div class=\'dir_detalhes\'>";
+                            select += "<div class=\'tituloInput\' style=\'margin-top:0px;\'>Selecione a quantidade de parcelas</div>";
+                            select += "<select class=\'select input_maior select_sborda\'>";
+                                for(var i = 1; i <= qtd[0]; i++) {
+                                    select += "<option value=\'" + i + "\'>" + i + "x - " + mascaraValor((valor / i), "R$") + "</option>";
+                                }
+                            select += "</select>";
+                        select += "</div>";
+                        $("#exibeCartao").html(imagem + select);
+                        return true;
+                    }
+                });
+            });
+        ');
+    }
+
     private function lista_cartoes() {
         $cartoes_banco = WC_Serveloja_Funcoes::cartoes_salvos();
         $lista = "<table cellspacing='0' cellpadding='0' class='tabela'>";
             foreach ($cartoes_banco as $row) {
                 $lista .= "<tr>" .
-                    "<td class='celulabody' style='width: 20%;'></td>" .
-                    "<td class='celulabody' style='width: 70%;'>" . ucfirst(strtolower($row->car_bandeira)) . "</td>" .
-                    "<td class='celulabody' style='width: 10%;'></td>" .
+                    "<td class='celulabody' style='width: 20%;'><img class='img_tabela_client' src='" . PASTA_PLUGIN . "assets/images/" . strtolower($row->car_bandeira) . ".png' title='" . ucfirst(strtolower($row->car_bandeira)) . "' alt='" . strtolower($row->car_bandeira) . "' /></td>" .
+                    "<td class='celulabody' style='width: 60%;'>" . ucfirst(strtolower($row->car_bandeira)) . "</td>" .
+                    "<td class='celulabody celulacentralizar' style='width: 20%;'><input id='" . strtolower($row->car_bandeira) . "' type='radio' name='bandeira_cartao' value='" . strtolower($row->car_parcelas) . "' /></td>" .
                 "</tr>";
             }
         $lista .= "</table>";
@@ -122,6 +170,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     private function modal_payment($order_id) {
         $order = wc_get_order($order_id);
+        echo $this->cpf_cnpj('cpfcnpjcomprador');
+        echo $this->detalhes_cartao($order->get_total());
         wc_enqueue_js('
             $("#bgModal").fadeIn();
             var reply = "";
@@ -141,7 +191,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                     "' . $this->lista_cartoes() . '" +
                 "</div>" +
                 "<div id=\'colunaDir\'>" +
-                    "<div class=\'tituloInput\' style=\'margin-top: 0px;\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
+                    "<div id=\'exibeCartao\'></div>" +
+                    "<div class=\'tituloInput\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
                     "<input type=\'text\' name=\'bandeira\' class=\'input input_maior input_sborda caixa_alta\' id=\'bandeira\' value=\'\' />" +
                     "<div class=\'tituloInput margin_top\'>CPF ou CNPJ do comprador (*)</div>" +
                     "<input type=\'text\' name=\'cpfcnpjcomprador\' class=\'input input_maior input_sborda\' id=\'cpfcnpjcomprador\' value=\'\' />" +
@@ -169,23 +220,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function validate() {
-        echo $this->modal();
-        wc_enqueue_js('
-            $("#submit-serveloja-payment-form").live("click", function() {
-                if ($("#bandeira").val() == "") {
-                    Modal("sucesso", "Algo está errado...", "Todos os campos marcados com <b>(*)</b> precisam ser preenchidos", "");
-                } else {
-
-                }
-            });
-        ');
-    }
-
     public function generate_serveloja_form($order_id) {
         $order = wc_get_order($order_id);
-        echo $this->cpf_cnpj('cpfcnpjcomprador');
-        echo $this->validate();
         echo $this->modal_payment($order_id);
         return '<div id="bgModal"></div>';
     }

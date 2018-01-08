@@ -156,3 +156,51 @@ p {
     padding: 0px;
     width: 63%;
 }
+
+#formPagamento #colunaDir #exibeCartao {
+    width: 100%;
+    float: left;
+    background-color: #f1f1f1;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+/* Ajustes tabelas */
+.tabela
+{
+    border: none;
+    border-radius: 3px !important;
+    width: 100%;
+    font-size: .75rem;
+    margin-top: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+.tabela .celulabody
+{
+    height: 30px;
+    padding: 10px 0px 10px 10px;
+    border-top: 1px solid #ccc;
+}
+
+.img_tabela_client {
+    float: left;
+    width: 100%;
+    margin-right: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.img_detalhes {
+    float: left;
+    width: 100px;
+    margin: 0px 10px 0px 0px;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+.dir_detalhes {
+    float: left;
+}

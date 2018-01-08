@@ -21,7 +21,7 @@
 }
 
 .input_maior {
-    width: 100%;
+    width: 100% !important;
 }
 
 .input_sborda {
@@ -77,6 +77,13 @@
     width: 60%;
     margin-top: 10px;
     margin-bottom: 0px;
+}
+
+.select_sborda {
+    border: none !important;
+    -moz-box-shadow: inset 2px 2px 4px #fff !important;
+    -webkit-box-shadow: inset 2px 2px 4px #fff !important;
+    box-shadow: inset 2px 2px 4px #fff !important;
 }
 
 input[type="submit"] {
