@@ -33,6 +33,10 @@ p {
     z-index: 12000;
 }
 
+.modal_erro {
+    border: 4px solid #f00;
+}
+
 #icone {
     float: left;
     width: 48px;
@@ -46,7 +50,7 @@ p {
     width: 100%;
 }
 
-#cabecalho {
+.cabecalho {
     background-color: #999;
     color: #fff;
     font-size: 1.25rem;
@@ -54,6 +58,10 @@ p {
     padding: 10px;
     width: 300px;
     margin: -11px 0px 10px -11px;
+}
+
+.cabecalho_erro {
+    background-color: #f00;
 }
 
 .modal .ok {
@@ -87,10 +95,38 @@ p {
     -moz-box-shadow: 0px 0px 7px #333;
 }
 
-.coluna25 {
+.margin_top {
+    margin-top: 10px;
+}
+
+/* ajustes colunas */
+.coluna50 {
     float: left;
-    width: 24%;
+    width: 50%;
+}
+
+.coluna23 {
+    float: left;
+    width: 23%;
     margin-right: 3px;
+}
+
+.coluna25_left {
+    float: left;
+    width: 24.2%;
+}
+
+.coluna25_right {
+    float: right;
+    width: 24.2%;
+}
+
+.coluna96 {
+    width: 96.5% !important;
+}
+
+.coluna100 {
+    width: 100% !important;
 }
 
 /* form pagamento */
@@ -109,29 +145,57 @@ p {
     z-index: 11000;
 }
 
-#formPagamento #cabecalho {
+#formPagamento #bgModal_interno {
+    position: fixed;
+    background-image: url("../images/bgModal.png");
+    width: 632px;
+    height: 472px;
+    z-index: 10000;
+    left: 50%;
+    top: 50%;
+    margin: -246px 0px 0px -306px;
+}
+
+#formPagamento #cabecalho_pagamento {
     float: left;
     width: 110%;
     height: 55px;
     padding: 10px;
     margin-bottom: 10px;
     background-color: #224527;
+    margin: -11px 0px 10px -11px;
 }
 
-#formPagamento #cabecalho #cancelar {
-    float: right;
+#formPagamento #cabecalho_pagamento #cancelar {
+    position: absolute;
     width: 35px;
     height: 35px;
     cursor: pointer;
-    margin-right: 40px;
+    right: 10px;
+    z-index: 500;
 }
 
-#formPagamento #cabecalho #logo {
+#formPagamento #cabecalho_pagamento #valor_total {
+    position: absolute;
+    padding-right: 14px;
+    width: 128px;
+    height: 35px;
+    background-image: url("../images/total_carrinho.png");
+    background-repeat: no-repeat;
+    right: 41px;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: right;
+    letter-spacing: -1px;
+}
+
+#formPagamento #cabecalho_pagamento #logo {
     float: left;
     width: 100px;
 }
 
-#formPagamento #cabecalho #logo img {
+#formPagamento #cabecalho_pagamento #logo img {
     width: 100%;
 }
 
@@ -160,7 +224,7 @@ p {
 #formPagamento #colunaDir #exibeCartao {
     width: 100%;
     float: left;
-    background-color: #f1f1f1;
+    background-color: #fff8cb;
     border-radius: 3px;
     padding: 10px;
     margin-bottom: 5px;
@@ -203,4 +267,5 @@ p {
 
 .dir_detalhes {
     float: left;
+    width: 69%;
 }

@@ -21,14 +21,15 @@
 }
 
 .input_maior {
-    width: 100% !important;
+    width: 100%;
 }
 
 .input_sborda {
     border: none !important;
-    -moz-box-shadow: inset 2px 2px 4px #f1f1f1 !important;
-    -webkit-box-shadow: inset 2px 2px 4px #f1f1f1 !important;
-    box-shadow: inset 2px 2px 4px #f1f1f1 !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow:  none !important;
+    box-shadow:  none !important;
+    padding: 1px 5px 1px 5px !important;
 }
 
 .caixa_alta {
