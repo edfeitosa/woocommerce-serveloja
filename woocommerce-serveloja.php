@@ -84,10 +84,10 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $sql = "CREATE TABLE $tabela_aplicacao (
                     `apl_id` int(11) NOT NULL AUTO_INCREMENT,
                     `apl_nome` varchar(32) NOT NULL,
-                    `apl_token` varchar(32) NOT NULL,
+                    `apl_token_teste` varchar(64) NOT NULL,
+                    `apl_token` varchar(64) NOT NULL,
                     `apl_prefixo` varchar(50),
                     `apl_email` varchar(100),
-                    `apl_ambiente` varchar(1) NOT NULL,
                     PRIMARY KEY (`apl_id`)
                 ) $charset_collate;
                 CREATE TABLE $tabela_cartoes (

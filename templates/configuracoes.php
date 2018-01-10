@@ -5,12 +5,11 @@
 <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/forms.css" rel="stylesheet" />
 <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
 
-<?php $funcoes = new WC_Serveloja_Funcoes ?>
-
 <?php // verifica se já existem informações sobre a aplicação
-  $dados = $funcoes::aplicacao();
+  $dados = WC_Serveloja_Funcoes::aplicacao();
   $apl_id = ($dados == "0") ? "0" : $dados[0]->apl_id;
   $apl_nome = ($dados == "0") ? "" : $dados[0]->apl_nome;
+  $apl_token_teste = ($dados == "0") ? "" : $dados[0]->apl_token_teste;
   $apl_token = ($dados == "0") ? "" : $dados[0]->apl_token;
   $apl_prefixo = ($dados == "0") ? "" : $dados[0]->apl_prefixo;
   $apl_email = ($dados == "0") ? "" : $dados[0]->apl_email;
@@ -30,19 +29,20 @@
   if (isset($_POST["salvar_config"])) {
     // atribui os valores do post às variaveis quando houver
     $apl_nome = $_POST["apl_nome"];
+    $apl_token_teste = $_POST["apl_token_teste"];
     $apl_token = $_POST["apl_token"];
     $apl_prefixo = $_POST["apl_prefixo"];
     $apl_email = $_POST["apl_email"];
     $apl_ambiente = $_POST["apl_ambiente"];
     // executa
-    echo $funcoes::save_configuracoes($_POST["apl_nome"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_ambiente"], $_POST["apl_id"]);
-    $dados = $funcoes::aplicacao();
+    echo WC_Serveloja_Funcoes::save_configuracoes($_POST["apl_nome"], $_POST["apl_token_teste"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_id"]);
+    $dados = WC_Serveloja_Funcoes::aplicacao();
   } ?>
 
   <?php // post cartões
   if (isset($_POST["salvar_cartoes"])) {
     // executa
-    echo $funcoes::insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
+    echo WC_Serveloja_Funcoes::insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
   } ?>
 
 <h1>Configurações</h1>
@@ -58,20 +58,17 @@
   <div class="tituloInput">Nome da Aplicação (*)</div>
   <input type="text" class="input" name="apl_nome" value="<?php echo $apl_nome; ?>" maxlength="30" />
   <br />
+  <div class="tituloInput">Token para Testes</div>
+  <input type="text" class="input" name="apl_token_teste" value="<?php echo $apl_token_teste; ?>" maxlength="60" />
+  <br />
   <div class="tituloInput">Token da Aplicação (*)</div>
-  <input type="text" class="input" name="apl_token" value="<?php echo $apl_token; ?>" maxlength="30" />
+  <input type="text" class="input" name="apl_token" value="<?php echo $apl_token; ?>" maxlength="60" />
   <br />
   <div class="tituloInput">Prefixo das transações</div>
   <input type="text" class="input" name="apl_prefixo" value="<?php echo $apl_prefixo; ?>" />
   <br />
   <div class="tituloInput">Informe um e-mail para receber notificações sobre compras realizadas em seu site/loja</div>
   <input type="text" class="input" name="apl_email" value="<?php echo $apl_email; ?>" />
-  <br />
-  <div class="tituloInput">O que você pretende fazer com esta aplicação? (*)</div>
-  <select class="select" name="apl_ambiente">
-      <option value="0" <?php if ($apl_ambiente == "0") { echo 'selected="selected"'; } ?>>Apenas um teste, estou verificando o funcionamento</option>
-      <option value="1" <?php if ($apl_ambiente == "1") { echo 'selected="selected"'; } ?>>Vou utilizar em minha loja/site para receber pagamentos</option>
-  </select>
   <br />
   <input type="hidden" name="apl_id" value="<?php echo $apl_id; ?>" />
   <input type="submit" class="submit" name="salvar_config" value="Salvar" name="salvar" />

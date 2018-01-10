@@ -15,40 +15,9 @@ if (!defined( 'ABSPATH' )) {
 
 class WC_Serveloja_Funcoes {
 
-    // acesso api
-    private function servidor() {
-        return "http://desenvolvimento.redeserveloja.com/Novo/webapi/";
-    }
-
-    private function metodos_acesso_api($url, $method, $param) {
-        if ($method == "get") {
-            /* em caso do método GET, os parâmetros serão adicionados na URL, como padrão */
-            $con = curl_init(WC_Serveloja_Funcoes::servidor() . $url . "?" . $param);
-            curl_setopt($con, CURLOPT_CUSTOMREQUEST, "GET");
-            curl_setopt($con, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json'
-            ));
-        } else if ($method == "post") {
-            /* em caso de POST, os parâmetros serão adicionados a um array, ex: array("id" => "$id", "symbol" => "$symbol"); */
-            $con = curl_init(WC_Serveloja_Funcoes::servidor() . $url . "?" . $param);
-            curl_setopt($con, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($con, CURLOPT_POSTFIELDS, $data_string);
-            curl_setopt($con, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen(json_encode($param))
-            ));
-        } 
-        curl_setopt($con, CURLOPT_TIMEOUT, 5);
-        curl_setopt($con, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($con, CURLOPT_RETURNTRANSFER, true);
-        $data = curl_exec($con);
-        curl_close($con);
-        return $data;
-    }
-
     // verifica se token informado por usuário é válido
     private function valida_token($url, $method, $param) {
-        return $api->metodos_acesso_api($url, $method, $param);
+        return WC_Serveloja_Api::metodos_acesso_api($url, $method, $param);
     }
 
     // fecha div via javascript após alguns segundos
@@ -62,15 +31,15 @@ class WC_Serveloja_Funcoes {
     }
 
     // ações no banco para aplicação
-    private function insert_aplicacao($apl_nome, $apl_token, $apl_prefixo, $apl_email, $apl_ambiente) {
+    private function insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email) {
         global $wpdb;
         $wpdb->insert(
             $wpdb->prefix . "aplicacao",
             array('apl_nome' => $apl_nome,
+                    'apl_token' => $apl_token_teste,
                     'apl_token' => $apl_token,
                     'apl_prefixo' => $apl_prefixo,
-                    'apl_email' => $apl_email,
-                    'apl_ambiente' => $apl_ambiente
+                    'apl_email' => $apl_email
             ),
             array('%s', '%s', '%s', '%s', '%s')
         );
@@ -81,15 +50,15 @@ class WC_Serveloja_Funcoes {
         }
     }
 
-    private function update_aplicacao($apl_nome, $apl_token, $apl_prefixo, $apl_email, $apl_ambiente, $apl_id) {
+    private function update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
         global $wpdb;
         $wpdb->update(
             $wpdb->prefix . "aplicacao",
             array('apl_nome' => $apl_nome,
+                    'apl_token_teste' => $apl_token_teste,
                     'apl_token' => $apl_token,
                     'apl_prefixo' => $apl_prefixo,
-                    'apl_email' => $apl_email,
-                    'apl_ambiente' => $apl_ambiente
+                    'apl_email' => $apl_email
             ),
             array('apl_id' => $apl_id),
             array('%s', '%s', '%s', '%s', '%s'),
@@ -116,16 +85,16 @@ class WC_Serveloja_Funcoes {
     }
 
     // salva dados aplicação
-    public function save_configuracoes($apl_nome, $apl_token, $apl_prefixo, $apl_email, $apl_ambiente, $apl_id) {
-        if ($apl_nome == "" || $apl_token == "" || $apl_ambiente == "") {
+    public function save_configuracoes($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
+        if ($apl_nome == "" || $apl_token == "") {
             return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Os campos marcados com (*) devem ser preencidos");
         } else if (WC_Serveloja_Funcoes::valida_email($apl_email) == false) {
             return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Informe um e-mail válido para continuar");
         } else {
             if ($apl_id == "0") {
-            return WC_Serveloja_Funcoes::insert_aplicacao($apl_nome, $apl_token, $apl_prefixo, $apl_email, $apl_ambiente);
+            return WC_Serveloja_Funcoes::insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
             } else {
-            return WC_Serveloja_Funcoes::update_aplicacao($apl_nome, $apl_token, $apl_prefixo, $apl_email, $apl_ambiente, $apl_id);
+            return WC_Serveloja_Funcoes::update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
             }
         }
     }
@@ -133,14 +102,14 @@ class WC_Serveloja_Funcoes {
     // lista dados da aplicação
     public function aplicacao() {
         global $wpdb;
-        $rows = $wpdb->get_results("SELECT apl_id, apl_nome, apl_token, apl_prefixo, apl_email, apl_ambiente FROM " . $wpdb->prefix . "aplicacao ORDER BY apl_id DESC LIMIT 1");
+        $rows = $wpdb->get_results("SELECT apl_id, apl_nome, apl_token_teste, apl_token, apl_prefixo, apl_email, apl_ambiente FROM " . $wpdb->prefix . "aplicacao ORDER BY apl_id DESC LIMIT 1");
         if ($wpdb->last_error) {
             return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
             if (count($rows) == 0) {
-            return "0";
+                return "0";
             } else {
-            return $rows;
+                return $rows;
             }
         }
     }
@@ -257,6 +226,20 @@ class WC_Serveloja_Funcoes {
         }
         $retorno .= '</table>';
         return $retorno;
+    }
+
+    public function token_valido() {
+        global $wpdb;
+        $rows = $wpdb->get_results("SELECT apl_token FROM " . $wpdb->prefix . "aplicacao");
+        if ($wpdb->last_error) {
+            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+        } else {
+            $token = '';
+            foreach ($rows as $row) {
+                $token = $row->apl_token;
+            }
+            return $token;
+        }
     }
 }
 
