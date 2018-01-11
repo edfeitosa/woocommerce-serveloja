@@ -13,7 +13,6 @@
   $apl_token = ($dados == "0") ? "" : $dados[0]->apl_token;
   $apl_prefixo = ($dados == "0") ? "" : $dados[0]->apl_prefixo;
   $apl_email = ($dados == "0") ? "" : $dados[0]->apl_email;
-  $apl_ambiente = ($dados == "0") ? "" : $dados[0]->apl_ambiente;
 ?>
 
 <!-- cabeçalho -->
@@ -33,16 +32,11 @@
     $apl_token = $_POST["apl_token"];
     $apl_prefixo = $_POST["apl_prefixo"];
     $apl_email = $_POST["apl_email"];
-    $apl_ambiente = $_POST["apl_ambiente"];
     // executa
+    // echo 'Nome: ' . $_POST["apl_nome"] . ' / Token Teste: ' . $_POST["apl_token_teste"] . ' / Token: ' . $_POST["apl_token"] . ' / Prefixo: ' . $_POST["apl_prefixo"] . ' / E-mail: ' . $_POST["apl_email"] . ' / Id: ' . $_POST["apl_id"];
+    
     echo WC_Serveloja_Funcoes::save_configuracoes($_POST["apl_nome"], $_POST["apl_token_teste"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_id"]);
     $dados = WC_Serveloja_Funcoes::aplicacao();
-  } ?>
-
-  <?php // post cartões
-  if (isset($_POST["salvar_cartoes"])) {
-    // executa
-    echo WC_Serveloja_Funcoes::insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
   } ?>
 
 <h1>Configurações</h1>

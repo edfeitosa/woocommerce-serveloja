@@ -4,7 +4,7 @@
  * Plugin URI: http://www.serveloja.com.br
  * Description: Plugin para realização de pagamentos via lojas virtuais com Woocommerce, utilizando soluções fornecidas pela Serveloja.
  * Version: 1.0
- * Author: Eduardo Feitosa - TI Serveloja
+ * Author: TI Serveloja
  * Author URI: http://www.serveloja.com.br
 **/
 
@@ -84,7 +84,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 $sql = "CREATE TABLE $tabela_aplicacao (
                     `apl_id` int(11) NOT NULL AUTO_INCREMENT,
                     `apl_nome` varchar(32) NOT NULL,
-                    `apl_token_teste` varchar(64) NOT NULL,
+                    `apl_token_teste` varchar(64),
                     `apl_token` varchar(64) NOT NULL,
                     `apl_prefixo` varchar(50),
                     `apl_email` varchar(100),

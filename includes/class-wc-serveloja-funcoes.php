@@ -36,7 +36,7 @@ class WC_Serveloja_Funcoes {
         $wpdb->insert(
             $wpdb->prefix . "aplicacao",
             array('apl_nome' => $apl_nome,
-                    'apl_token' => $apl_token_teste,
+                    'apl_token_teste' => $apl_token_teste,
                     'apl_token' => $apl_token,
                     'apl_prefixo' => $apl_prefixo,
                     'apl_email' => $apl_email
@@ -73,14 +73,14 @@ class WC_Serveloja_Funcoes {
 
     // validação de e-mail
     private function valida_email($email) {
-        $conta = "^[a-zA-Z0-9\._-]+@";
-        $domino = "[a-zA-Z0-9\._-]+.";
-        $extensao = "([a-zA-Z]{2,4})$";
-        $pattern = $conta.$domino.$extensao;
-        if (ereg($pattern, $email)) {
+        if ($email == '') {
             return true;
         } else {
-            return false;
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return true;
+            } else {
+                return false; 
+            }
         }
     }
 
@@ -92,9 +92,9 @@ class WC_Serveloja_Funcoes {
             return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Informe um e-mail válido para continuar");
         } else {
             if ($apl_id == "0") {
-            return WC_Serveloja_Funcoes::insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
+                return WC_Serveloja_Funcoes::insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
             } else {
-            return WC_Serveloja_Funcoes::update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
+                return WC_Serveloja_Funcoes::update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
             }
         }
     }
@@ -102,7 +102,7 @@ class WC_Serveloja_Funcoes {
     // lista dados da aplicação
     public function aplicacao() {
         global $wpdb;
-        $rows = $wpdb->get_results("SELECT apl_id, apl_nome, apl_token_teste, apl_token, apl_prefixo, apl_email, apl_ambiente FROM " . $wpdb->prefix . "aplicacao ORDER BY apl_id DESC LIMIT 1");
+        $rows = $wpdb->get_results("SELECT apl_id, apl_nome, apl_token_teste, apl_token, apl_prefixo, apl_email FROM " . $wpdb->prefix . "aplicacao ORDER BY apl_id DESC LIMIT 1");
         if ($wpdb->last_error) {
             return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
@@ -147,7 +147,7 @@ class WC_Serveloja_Funcoes {
         if ($wpdb->last_error) {
             return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "sucesso", "Os dados foram adicionados com sucesso");
+            header("location: " . esc_url( admin_url('admin.php?page=cartoes')));
         }
     }
 
@@ -228,19 +228,6 @@ class WC_Serveloja_Funcoes {
         return $retorno;
     }
 
-    public function token_valido() {
-        global $wpdb;
-        $rows = $wpdb->get_results("SELECT apl_token FROM " . $wpdb->prefix . "aplicacao");
-        if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
-        } else {
-            $token = '';
-            foreach ($rows as $row) {
-                $token = $row->apl_token;
-            }
-            return $token;
-        }
-    }
 }
 
 ?>

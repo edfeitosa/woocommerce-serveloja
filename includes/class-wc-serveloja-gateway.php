@@ -48,16 +48,12 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 				'description' => '',
 			),
             'enabled' => array(
-                'title'       => __('Habilitar/Desabilitar - ' . $this->token_valido(), 'woocommerce-serveloja'),
+                'title'       => __('Habilitar/Desabilitar', 'woocommerce-serveloja'),
                 'type'        => 'checkbox',
                 'label'       => __('Utilizar <b>Serveloja Woocommerce</b> para receber pagamentos', 'woocommerce-serveloja'),
                 'default'     => 'yes'
             )
         );
-    }
-
-    private function token_valido() {
-        return WC_Serveloja_Funcoes::token_valido();
     }
 
     private function modal() {
@@ -199,7 +195,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         return $lista;
     }
 
-    private function valida_cpfCnpj() {
+    private function validacoes() {
         wc_enqueue_js('
             function validarCPF (cpf) {
                 var Soma;
@@ -304,8 +300,85 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                         }
                     }
                 });
+
+                $("#submit-serveloja-payment-form").hide();
+                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #CpfCnpjComprador, #DDDCelular, #NrCelular").live("mousemove", function() {
+                    if ($("#nmTitular").val() == "" ||
+                        $("#NrCartao").val() == "" ||
+                        $("#DataValidade").val() == "" ||
+                        $("#CodSeguranca").val() == ""
+                    ) {
+                        $("#submit-serveloja-payment-form").hide();
+                    } else {
+                        $("#submit-serveloja-payment-form").show();
+                    }
+                });
+
             });
         ');
+    }
+
+    private function apl_authorization() {
+        $authorization = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_token;
+        return $authorization;
+    }
+
+    private function apl_applicatioId() {
+        $applicatioId = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_nome;
+        return $applicatioId;
+    }
+
+    private function form_payment($order_id) {
+        $order = wc_get_order($order_id);
+        if ($this->apl_authorization() != "") {
+            $retorno = '"<p>Todos os campos marcados com <b>(*)</b>, são de preenchimento obrigatório</p>" +
+            "<div id=\'colunaEsq\'>" +
+                "<div class=\'tituloInput\' style=\'margin-top: -5px;\'>Selecione um cartão (*)</div>" +
+                "' . $this->lista_cartoes() . '" +
+            "</div>" +
+            "<div id=\'colunaDir\'>" +
+                "<form method=\'POST\' action=\'\' name=\'dados_pagamento\'>" +
+                    "<div id=\'exibeCartao\'></div>" +
+                    "<div class=\'clear\'></div>" +
+                    "<div class=\'tituloInput\' style=\'margin-top: -6px;\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
+                    "<input type=\'text\' name=\'nmTitular\' class=\'input input_maior input_sborda caixa_alta\' id=\'nmTitular\' value=\'\' />" +
+                    "<div class=\'coluna50\'>" +
+                        "<div class=\'tituloInput margin_top\'>Número do cartão (*)</div>" +
+                        "<input type=\'text\' name=\'NrCartao\' class=\'input input_maior input_sborda coluna96\' id=\'NrCartao\' value=\'\' />" +
+                    "</div>" +
+                    "<div class=\'coluna25_left\'>" +
+                        "<div class=\'tituloInput margin_top\'>Validade (*)</div>" +
+                        "<input type=\'text\' name=\'DataValidade\' class=\'input input_maior input_sborda\' id=\'DataValidade\' value=\'\' />" +
+                    "</div>" +
+                    "<div class=\'coluna25_right\'>" +
+                        "<div class=\'tituloInput margin_top\'>CCV (*)</div>" +
+                        "<input type=\'text\' name=\'CodSeguranca\' class=\'input input_maior input_sborda\' id=\'CodSeguranca\' maxlength=\'5\' value=\'\' />" +
+                    "</div>" +
+                    "<div class=\'clear\'></div>" +
+                    "<div id=\'senha\'></div>" +
+                    "<div class=\'coluna50\'>" +
+                        "<div class=\'tituloInput margin_top\'>CPF ou CNPJ do comprador</div>" +
+                        "<input type=\'text\' name=\'CpfCnpjComprador\' class=\'input input_maior input_sborda coluna96\' id=\'CpfCnpjComprador\' value=\'\' />" +
+                    "</div>" +
+                    "<div class=\'coluna25_left\'>" +
+                        "<div class=\'tituloInput margin_top\'>DDD</div>" +
+                        "<input type=\'text\' name=\'DDDCelular\' class=\'input input_maior input_sborda\' id=\'DDDCelular\' maxlength=\'2\' value=\'\' />" +
+                    "</div>" +
+                    "<div class=\'coluna25_right\'>" +
+                        "<div class=\'tituloInput margin_top\'>Celular</div>" +
+                        "<input type=\'text\' name=\'NrCelular\' class=\'input input_maior input_sborda\' id=\'NrCelular\' value=\'\' />" +
+                    "</div>" +
+                    "" +
+                    "" +
+                    "<br />" +
+                    "<input class=\'float_right input_verde\' type=\'submit\' name=\'finalizar\' id=\'submit-serveloja-payment-form\' value=\'Finalizar\' />" +
+                    "<a class=\'botao input_vermelho float_right\' href=\'' . esc_url( $order->get_cancel_order_url() ) . '\' title=\'Cancelar e voltar para o carrinho\'>' . __( 'Cancelar', 'woocommerce-serveloja' ) . '</a>";
+                "</form>" +
+            "</div>"';
+        } else {
+            $retorno = '"<div class=\'alerta\'>O pagamento via Serveloja ainda não está liberado. Entre em contato com o proprietário da loja.</div>"';
+        }
+        return $retorno;
     }
 
     private function modal_payment($order_id) {
@@ -314,7 +387,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         echo $this->detalhes_cartao($order->get_total());
         echo $this->mascaras();
         echo $this->modal();
-        echo $this->valida_cpfCnpj();
+        echo $this->validacoes();
         wc_enqueue_js('
             $("#bgModal").fadeIn();
             cpf_cnpj("CpfCnpjComprador");
@@ -323,7 +396,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             mascaras("NrCartao", "9999-9999-9999-9999");
             var reply = "";
             reply += "<div id=\'formPagamento\' class=\'sombra\'>" +
-                "<div id=\'bgModal_interno\'></div>" +
+            "<div id=\'bgModal_interno\'></div>" +
                 "<div id=\'cabecalho_pagamento\'>" +
                     "<div id=\'logo\'><img src=\'' . PASTA_PLUGIN .'assets/images/serveloja.png\' alt=\'serveloja\' /></div>" +
                     "<div id=\'valor_total\'>R$ " + mascaraValor(' . $order->get_total() . ') + "</div>" +
@@ -334,50 +407,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                     "</div>" +
                 "</div>" +
                 "<div class=\'clear\'></div>" +
-                "<p>Todos os campos marcados com <b>(*)</b>, são de preenchimento obrigatório</p>" +
-                "<div id=\'colunaEsq\'>" +
-                    "<div class=\'tituloInput\' style=\'margin-top: -5px;\'>Selecione um cartão (*)</div>" +
-                    "' . $this->lista_cartoes() . '" +
-                "</div>" +
-                "<div id=\'colunaDir\'>" +
-                    "<form method=\'POST\' action=\'\' name=\'dados_pagamento\'>" +
-                        "<div id=\'exibeCartao\'></div>" +
-                        "<div class=\'clear\'></div>" +
-                        "<div class=\'tituloInput\' style=\'margin-top: -6px;\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
-                        "<input type=\'text\' name=\'nmTitular\' class=\'input input_maior input_sborda caixa_alta\' id=\'nmTitular\' value=\'\' />" +
-                        "<div class=\'coluna50\'>" +
-                            "<div class=\'tituloInput margin_top\'>Número do cartão (*)</div>" +
-                            "<input type=\'text\' name=\'NrCartao\' class=\'input input_maior input_sborda coluna96\' id=\'NrCartao\' value=\'\' />" +
-                        "</div>" +
-                        "<div class=\'coluna25_left\'>" +
-                            "<div class=\'tituloInput margin_top\'>Validade (*)</div>" +
-                            "<input type=\'text\' name=\'DataValidade\' class=\'input input_maior input_sborda\' id=\'DataValidade\' value=\'\' />" +
-                        "</div>" +
-                        "<div class=\'coluna25_right\'>" +
-                            "<div class=\'tituloInput margin_top\'>CCV (*)</div>" +
-                            "<input type=\'text\' name=\'CodSeguranca\' class=\'input input_maior input_sborda\' id=\'CodSeguranca\' maxlength=\'5\' value=\'\' />" +
-                        "</div>" +
-                        "<div class=\'clear\'></div>" +
-                        "<div id=\'senha\'></div>" +
-                        "<div class=\'coluna50\'>" +
-                            "<div class=\'tituloInput margin_top\'>CPF ou CNPJ do comprador</div>" +
-                            "<input type=\'text\' name=\'CpfCnpjComprador\' class=\'input input_maior input_sborda coluna96\' id=\'CpfCnpjComprador\' value=\'\' />" +
-                        "</div>" +
-                        "<div class=\'coluna25_left\'>" +
-                            "<div class=\'tituloInput margin_top\'>DDD</div>" +
-                            "<input type=\'text\' name=\'DDDCelular\' class=\'input input_maior input_sborda\' id=\'DDDCelular\' maxlength=\'2\' value=\'\' />" +
-                        "</div>" +
-                        "<div class=\'coluna25_right\'>" +
-                            "<div class=\'tituloInput margin_top\'>Celular</div>" +
-                            "<input type=\'text\' name=\'NrCelular\' class=\'input input_maior input_sborda\' id=\'NrCelular\' value=\'\' />" +
-                        "</div>" +
-                        "" +
-                        "" +
-                        "<br />" +
-                        "<input class=\'float_right input_verde\' type=\'submit\' name=\'finalizar\' id=\'submit-serveloja-payment-form\' value=\'Finalizar\' />" +
-                        "<a class=\'botao input_vermelho float_right\' href=\'' . esc_url( $order->get_cancel_order_url() ) . '\' title=\'Cancelar e voltar para o carrinho\'>' . __( 'Cancelar', 'woocommerce-serveloja' ) . '</a>";
-                    "</form>" +
-                "</div>" +
+                ' . $this->form_payment($order_id) . ' +
             "</div>";
             $("#bgModal").html(reply);
         ');
@@ -429,9 +459,10 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 "DsObservacao"     => "Venda de produtos em sua loja pelo link " . $this->UrlAtual() . " às " . date("d/m/Y H:i")
             );
             // envia dados via API
-            WC_Serveloja_API::metodos_acesso_api('Vendas/EfetuarVendaCredito', 'POST', $dados);
+            $resposta = json_decode(WC_Serveloja_API::metodos_acesso_api('Vendas/EfetuarVendaCredito', 'post', $dados, $this->apl_authorization(), $this->apl_applicatioId()), true);
+            echo $resposta['HttpStatusCode'];
             // adiciona status na loja
-            $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja.', 'woocommerce-serveloja' ));
+            /* $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja.', 'woocommerce-serveloja' ));
             // reduz estoque, se houver
             $order->reduce_order_stock();
             // limpa carrinho
@@ -439,7 +470,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             return array(
                 'result' => 'success',
                 'redirect' => $this->get_return_url($order)
-            );
+            ); */
         }
     }
     
