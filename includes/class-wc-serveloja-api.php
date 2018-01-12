@@ -42,13 +42,13 @@ class WC_Serveloja_API {
 			$data_string = json_encode($param);
 			$con = curl_init(WC_Serveloja_API::servidor() . $url . "?" . $param);
 			curl_setopt($con, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($con, CURLOPT_POST, 1);
 			curl_setopt($con, CURLOPT_POSTFIELDS, $data_string);
 			curl_setopt($con, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($con, CURLOPT_HTTPHEADER, array(
 					'Authorization: Basic ' . $authorization,
 					'ApplicationId: ' . $applicationId,
-					'Content-Type: application/json',
-					'Content-Length: ' . strlen($data_string)
+					'Content-Type: application/json'
 				)
 			);
 			$data = curl_exec($con);

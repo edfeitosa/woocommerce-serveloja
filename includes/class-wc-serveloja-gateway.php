@@ -302,8 +302,10 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 });
 
                 $("#submit-serveloja-payment-form").hide();
-                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #CpfCnpjComprador, #DDDCelular, #NrCelular").live("mousemove", function() {
-                    if ($("#nmTitular").val() == "" ||
+                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #colunaEsq").live("mousemove", function() {
+                    var isChecked = $("input[name=bandeira_cartao]:checked").val();
+                    if (!isChecked ||
+                        $("#nmTitular").val() == "" ||
                         $("#NrCartao").val() == "" ||
                         $("#DataValidade").val() == "" ||
                         $("#CodSeguranca").val() == ""
@@ -442,7 +444,9 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/tabela.css" rel="stylesheet" />';
         echo '<script type="text/javascript" src="' . PASTA_PLUGIN . 'assets/scripts/maskedinput.js"></script>';
         $order = wc_get_order( $order_id );
+
         echo $this->generate_serveloja_form($order_id);
+        
         if (isset($_POST['finalizar'])) {
             $dados = array(
                 "Bandeira"         => strtoupper($_POST['Bandeira']),
@@ -456,21 +460,38 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 "SenhaCartao"      => $_POST['SenhaCartao'],
                 "DDDCelular"       => $_POST['DDDCelular'],
                 "NrCelular"        => preg_replace("/[^0-9]/", "", $_POST['NrCelular']),
-                "DsObservacao"     => "Venda de produtos em sua loja pelo link " . $this->UrlAtual() . " às " . date("d/m/Y H:i")
+                "DsObservacao"     => "Venda de produtos em sua loja utilizando Woocommerce Serveloja"
             );
+
             // envia dados via API
-            $resposta = json_decode(WC_Serveloja_API::metodos_acesso_api('Vendas/EfetuarVendaCredito', 'post', $dados, $this->apl_authorization(), $this->apl_applicatioId()), true);
-            echo $resposta['HttpStatusCode'];
-            // adiciona status na loja
-            /* $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja.', 'woocommerce-serveloja' ));
-            // reduz estoque, se houver
-            $order->reduce_order_stock();
-            // limpa carrinho
-            $woocommerce->cart->empty_cart();
-            return array(
-                'result' => 'success',
-                'redirect' => $this->get_return_url($order)
-            ); */
+            $resposta = json_decode(WC_Serveloja_API::metodos_acesso_api('Vendas/EfetuarVendaCredito', 'post', $dados_json, $this->apl_authorization(), $this->apl_applicatioId()), true);
+            print_r($resposta);
+
+            if ($resposta['HttpStatusCode'] == '500') {
+                wc_enqueue_js('
+                    $(document).ready(function () {
+                        Modal("erro", "Algo está errado...", "' . $resposta['Mensagem'] . '", "", "bgModal_interno");
+                    });
+                ');
+            } else if ($resposta['HttpStatusCode'] == '401') {
+                wc_enqueue_js('
+                    $(document).ready(function () {
+                        Modal("erro", "Algo está errado...", "Ocorreu um erro em nossa loja. Entre em contato com o administrador.", "", "bgModal_interno");
+                    });
+                ');
+            } else if ($resposta['HttpStatusCode'] == '200') {
+                // adiciona status na loja
+                $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja.', 'woocommerce-serveloja' ));
+                // reduz estoque, se houver
+                $order->reduce_order_stock();
+                // limpa carrinho
+                $woocommerce->cart->empty_cart();
+                wc_enqueue_js('
+                    $(document).ready(function () {
+                        Modal("sucesso", "Sucesso", "' . $resposta['Mensagem'] . '", "' . esc_url('loja/') . '", "bgModal_interno");
+                    });
+                ');
+            }
         }
     }
     
