@@ -83,6 +83,9 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 $("#ok, #okConf, #cancela").live("click", function () {
                     $("#" + bg).html("");
                     $("#" + bg).fadeOut();
+                    if (url != "") {
+                        jQuery(window.document.location).attr("href", url);
+                    }
                 });
             }
         ');
@@ -153,14 +156,13 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                         var imagem = "<img class=\'img_detalhes\' src=\'' . PASTA_PLUGIN .'assets/images/" + qtd[1].toLowerCase() + ".png\' alt=\'" + qtd[1].toLowerCase() + "\' />";
                         var select = "<div class=\'dir_detalhes\'>";
                             select += "<div class=\'tituloInput\' style=\'margin-top:0px;\'>Selecione a quantidade de parcelas</div>";
-                            select += "<select class=\'select input_maior select_sborda coluna100\'>";
+                            select += "<select class=\'select input_maior select_sborda coluna100\' id=\'QtParcela\' name=\'QtParcela\'>";
                                 for(var i = 1; i <= qtd[0]; i++) {
                                     select += "<option value=\'" + i + "\'>" + i + "x - R$ " + mascaraValor(valor / i) + "</option>";
                                 }
                             select += "</select>";
                         select += "</div>";
                         select += "<input type=\'hidden\' id=\'Bandeira\' name=\'Bandeira\' value=\'" + qtd[1] + "\' />";
-                        select += "<input type=\'hidden\' id=\'QtParcela\' name=\'QtParcela\' value=\'" + qtd[0] + "\' />";
                         select += "<input type=\'hidden\' id=\'Valor\' name=\'Valor\' value=\'" + mascaraValor(valor) + "\' />";
                         $("#exibeCartao").html(imagem + select);
 
@@ -183,15 +185,20 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     private function lista_cartoes() {
         $cartoes_banco = WC_Serveloja_Funcoes::cartoes_salvos();
-        $lista = "<table cellspacing='0' cellpadding='0' class='tabela'>";
-            foreach ($cartoes_banco as $row) {
-                $lista .= "<tr>" .
-                    "<td class='celulabody' style='width: 20%;'><img class='img_tabela_client' src='" . PASTA_PLUGIN . "assets/images/" . strtolower($row->car_bandeira) . ".png' title='" . ucfirst(strtolower($row->car_bandeira)) . "' alt='" . strtolower($row->car_bandeira) . "' /></td>" .
-                    "<td class='celulabody' style='width: 60%;'>" . ucfirst(strtolower($row->car_bandeira)) . "</td>" .
-                    "<td class='celulabody celulacentralizar' style='width: 20%;'><input id='" . strtolower($row->car_bandeira) . "' type='radio' name='bandeira_cartao' value='" . strtolower($row->car_parcelas) . "-" . strtolower($row->car_cod) . "' /></td>" .
-                "</tr>";
+        $lista = "";
+            if (count($cartoes_banco) > 0) {
+                $lista .= "<table cellspacing='0' cellpadding='0' class='tabela'>";
+                    foreach ($cartoes_banco as $row) {
+                        $lista .= "<tr>" .
+                            "<td class='celulabody' style='width: 20%;'><img class='img_tabela_client' src='" . PASTA_PLUGIN . "assets/images/" . strtolower($row->car_bandeira) . ".png' title='" . ucfirst(strtolower($row->car_bandeira)) . "' alt='" . strtolower($row->car_bandeira) . "' /></td>" .
+                            "<td class='celulabody' style='width: 60%;'>" . ucfirst(strtolower($row->car_bandeira)) . "</td>" .
+                            "<td class='celulabody celulacentralizar' style='width: 20%;'><input id='" . strtolower($row->car_bandeira) . "' type='radio' name='bandeira_cartao' value='" . strtolower($row->car_parcelas) . "-" . strtolower($row->car_cod) . "' /></td>" .
+                        "</tr>";
+                    }
+                $lista .= "</table>";
+            } else {
+                $lista .= "<div class='alerta'>Nenhum cartão está disponível para uso. Entre em contato com o administrador da loja.</div>";
             }
-        $lista .= "</table>";
         return $lista;
     }
 
@@ -302,13 +309,15 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 });
 
                 $("#submit-serveloja-payment-form").hide();
-                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #colunaEsq").live("mousemove", function() {
+                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #colunaEsq, #DDDCelular, #NrCelular").live("mousemove", function() {
                     var isChecked = $("input[name=bandeira_cartao]:checked").val();
                     if (!isChecked ||
                         $("#nmTitular").val() == "" ||
                         $("#NrCartao").val() == "" ||
                         $("#DataValidade").val() == "" ||
-                        $("#CodSeguranca").val() == ""
+                        $("#CodSeguranca").val() == "" ||
+                        $("#DDDCelular").val() == "" ||
+                        $("#NrCelular").val() == ""
                     ) {
                         $("#submit-serveloja-payment-form").hide();
                     } else {
@@ -316,6 +325,16 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                     }
                 });
 
+            });
+        ');
+    }
+
+    private function alert_inicio_validacao() {
+        wc_enqueue_js('
+            $(document).ready(function() {
+                $("#submit-serveloja-payment-form").live("click", function () {
+                    Modal("alerta", "Validando...", "Estamos validando suas informações, aguarde alguns instantes", "", "bgModal_interno");
+                });
             });
         ');
     }
@@ -333,6 +352,15 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
     private function form_payment($order_id) {
         $order = wc_get_order($order_id);
         if ($this->apl_authorization() != "") {
+            // verifica se existe post
+            $nmTitular = isset($_POST['nmTitular']) ? $_POST['nmTitular'] : '';
+            $NrCartao = isset($_POST['NrCartao']) ? $_POST['NrCartao'] : '';
+            $DataValidade = isset($_POST['DataValidade']) ? $_POST['DataValidade'] : '';
+            $CpfCnpjComprador = isset($_POST['CpfCnpjComprador']) ? $_POST['CpfCnpjComprador'] : '';
+            $CodSeguranca = isset($_POST['CodSeguranca']) ? $_POST['CodSeguranca'] : '';
+            $DDDCelular = isset($_POST['DDDCelular']) ? $_POST['DDDCelular'] : '';
+            $NrCelular = isset($_POST['NrCelular']) ? $_POST['NrCelular'] : '';
+            // form
             $retorno = '"<p>Todos os campos marcados com <b>(*)</b>, são de preenchimento obrigatório</p>" +
             "<div id=\'colunaEsq\'>" +
                 "<div class=\'tituloInput\' style=\'margin-top: -5px;\'>Selecione um cartão (*)</div>" +
@@ -343,32 +371,32 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                     "<div id=\'exibeCartao\'></div>" +
                     "<div class=\'clear\'></div>" +
                     "<div class=\'tituloInput\' style=\'margin-top: -6px;\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
-                    "<input type=\'text\' name=\'nmTitular\' class=\'input input_maior input_sborda caixa_alta\' id=\'nmTitular\' value=\'\' />" +
+                    "<input type=\'text\' name=\'nmTitular\' class=\'input input_maior input_sborda caixa_alta\' id=\'nmTitular\' value=\'' . $nmTitular . '\' />" +
                     "<div class=\'coluna50\'>" +
                         "<div class=\'tituloInput margin_top\'>Número do cartão (*)</div>" +
-                        "<input type=\'text\' name=\'NrCartao\' class=\'input input_maior input_sborda coluna96\' id=\'NrCartao\' value=\'\' />" +
+                        "<input type=\'text\' name=\'NrCartao\' class=\'input input_maior input_sborda coluna96\' id=\'NrCartao\' value=\'' . $NrCartao . '\' />" +
                     "</div>" +
                     "<div class=\'coluna25_left\'>" +
                         "<div class=\'tituloInput margin_top\'>Validade (*)</div>" +
-                        "<input type=\'text\' name=\'DataValidade\' class=\'input input_maior input_sborda\' id=\'DataValidade\' value=\'\' />" +
+                        "<input type=\'text\' name=\'DataValidade\' class=\'input input_maior input_sborda\' id=\'DataValidade\' value=\'' . $DataValidade . '\' />" +
                     "</div>" +
                     "<div class=\'coluna25_right\'>" +
                         "<div class=\'tituloInput margin_top\'>CCV (*)</div>" +
-                        "<input type=\'text\' name=\'CodSeguranca\' class=\'input input_maior input_sborda\' id=\'CodSeguranca\' maxlength=\'5\' value=\'\' />" +
+                        "<input type=\'text\' name=\'CodSeguranca\' class=\'input input_maior input_sborda\' id=\'CodSeguranca\' maxlength=\'4\' value=\'' . $CodSeguranca . '\' />" +
                     "</div>" +
                     "<div class=\'clear\'></div>" +
                     "<div id=\'senha\'></div>" +
                     "<div class=\'coluna50\'>" +
                         "<div class=\'tituloInput margin_top\'>CPF ou CNPJ do comprador</div>" +
-                        "<input type=\'text\' name=\'CpfCnpjComprador\' class=\'input input_maior input_sborda coluna96\' id=\'CpfCnpjComprador\' value=\'\' />" +
+                        "<input type=\'text\' name=\'CpfCnpjComprador\' class=\'input input_maior input_sborda coluna96\' id=\'CpfCnpjComprador\' value=\'' . $CpfCnpjComprador . '\' />" +
                     "</div>" +
                     "<div class=\'coluna25_left\'>" +
-                        "<div class=\'tituloInput margin_top\'>DDD</div>" +
-                        "<input type=\'text\' name=\'DDDCelular\' class=\'input input_maior input_sborda\' id=\'DDDCelular\' maxlength=\'2\' value=\'\' />" +
+                        "<div class=\'tituloInput margin_top\'>DDD (*)</div>" +
+                        "<input type=\'text\' name=\'DDDCelular\' class=\'input input_maior input_sborda\' id=\'DDDCelular\' maxlength=\'2\' value=\'' . $DDDCelular . '\' />" +
                     "</div>" +
                     "<div class=\'coluna25_right\'>" +
-                        "<div class=\'tituloInput margin_top\'>Celular</div>" +
-                        "<input type=\'text\' name=\'NrCelular\' class=\'input input_maior input_sborda\' id=\'NrCelular\' value=\'\' />" +
+                        "<div class=\'tituloInput margin_top\'>Celular (*)</div>" +
+                        "<input type=\'text\' name=\'NrCelular\' class=\'input input_maior input_sborda\' id=\'NrCelular\' value=\'' . $NrCelular . '\' />" +
                     "</div>" +
                     "" +
                     "" +
@@ -390,6 +418,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         echo $this->mascaras();
         echo $this->modal();
         echo $this->validacoes();
+        echo $this->alert_inicio_validacao();
         wc_enqueue_js('
             $("#bgModal").fadeIn();
             cpf_cnpj("CpfCnpjComprador");
@@ -464,22 +493,22 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             );
 
             // envia dados via API
-            $resposta = json_decode(WC_Serveloja_API::metodos_acesso_api('Vendas/EfetuarVendaCredito', 'post', $dados_json, $this->apl_authorization(), $this->apl_applicatioId()), true);
-            print_r($resposta);
+            $resposta = json_decode(WC_Serveloja_API::metodos_post('Vendas/EfetuarVendaCredito', $dados, $this->apl_authorization(), $this->apl_applicatioId()), true);
 
             if ($resposta['HttpStatusCode'] == '500') {
                 wc_enqueue_js('
                     $(document).ready(function () {
-                        Modal("erro", "Algo está errado...", "' . $resposta['Mensagem'] . '", "", "bgModal_interno");
+                        console.log("Testando");
+                        Modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resposta['Mensagem'])) . '", "", "bgModal_interno");
                     });
                 ');
-            } else if ($resposta['HttpStatusCode'] == '401') {
+            } else if ($resposta['HttpStatusCode'] == 401) {
                 wc_enqueue_js('
                     $(document).ready(function () {
                         Modal("erro", "Algo está errado...", "Ocorreu um erro em nossa loja. Entre em contato com o administrador.", "", "bgModal_interno");
                     });
                 ');
-            } else if ($resposta['HttpStatusCode'] == '200') {
+            } else if ($resposta['HttpStatusCode'] == 200) {
                 // adiciona status na loja
                 $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja.', 'woocommerce-serveloja' ));
                 // reduz estoque, se houver
@@ -488,7 +517,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 $woocommerce->cart->empty_cart();
                 wc_enqueue_js('
                     $(document).ready(function () {
-                        Modal("sucesso", "Sucesso", "' . $resposta['Mensagem'] . '", "' . esc_url('loja/') . '", "bgModal_interno");
+                        $("#formPagamento").hide();
+                        Modal("sucesso", "Sucesso", "Sua compra foi realizada com sucesso. Muito obrigado por utilizar os serviços da <b>Serveloja</b>", "' . get_option('home') . esc_url('/loja') . '", "bgModal");
                     });
                 ');
             }

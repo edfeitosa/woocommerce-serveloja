@@ -66,6 +66,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-funcoes.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-api.php';
+                include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-modulos.php';
                 include_once dirname( __FILE__ ) . '/templates/configuracoes.php';
                 include_once dirname( __FILE__ ) . '/templates/cartoes.php';
                 include_once dirname( __FILE__ ) . '/templates/home.php';
@@ -105,7 +106,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             private function menu() {
                 add_action('admin_menu', 'addCustomMenuItem');
                 function addCustomMenuItem() {
-                    add_menu_page('Serveloja', 'Serveloja', 'manage_options', 'home', 'function_index', 'dashicons-businessman', 6);
+                    add_menu_page('Serveloja', 'Serveloja', 'manage_options', 'home', 'function_home', 'dashicons-businessman', 6);
                     add_submenu_page('home', 'Serveloja', 'Configurações', 'manage_options', 'configuracoes', 'function_configuracoes');
                     add_submenu_page('home', 'Serveloja', 'Cartões', 'manage_options', 'cartoes', 'function_cartoes');
                 }

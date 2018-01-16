@@ -140,3 +140,36 @@ h3 {
     border: 1px solid #ccc;
     border-radius: 3px;
 }
+
+/* barra de ferramentas admin */
+.barraFerramentas {
+    position: relative;
+    width: 98%;
+    height: 70px;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin: 15px 0px 15px 0px;
+    background-color: #f6f6f6;
+    padding: 10px 0px;
+}
+
+    .barraFerramentas .botao {
+        float: left;
+        width: 105px;
+        height: 60px;
+        padding: 5px 0px;
+        font-weight: bold !important;
+        font-size: 12px !important;
+        text-align: center !important;
+        margin: 0px 0px 0px 10px;
+        border: none;
+        background-color: transparent;
+    }
+
+        .barraFerramentas .botao img {
+            margin-bottom: 0px;
+            width: 40px;
+            _border: 0px !important;
+            cursor: pointer;
+}

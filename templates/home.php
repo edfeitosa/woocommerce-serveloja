@@ -1,17 +1,11 @@
-<?php function function_index() { ?>
+<?php function function_home() { ?>
 
     <!-- scripts e estilos -->
     <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/style.css" rel="stylesheet" />
     <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
 
     <!-- cabeçalho -->
-    <div id="headerPlugin">
-        <div id="logo">
-            <a href="admin.php?page=index">
-                <img src='<?php echo PASTA_PLUGIN; ?>assets/images/serveloja.png' alt='servloja' border='0' />
-            </a>
-        </div>
-    </div>
+    <?php WC_Serveloja_Modulos::cabecalho(); ?>
 
     <h1>Woocommerce Serveloja</h1>
     <h2>

@@ -7,13 +7,7 @@
     <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
 
     <!-- cabeçalho -->
-    <div id="headerPlugin">
-        <div id="logo">
-            <a href="admin.php?page=index">
-                <img src='<?php echo PASTA_PLUGIN; ?>assets/images/serveloja.png' alt='servloja' border='0' />
-            </a>
-        </div>
-    </div>
+    <?php WC_Serveloja_Modulos::cabecalho(); ?>
 
     <?php $funcoes = new WC_Serveloja_Funcoes;
     $cartoes_salvos = $funcoes::cartoes_salvos();
@@ -22,6 +16,12 @@
     } ?>
 
     <h1>Cartões de Crédito</h1>
+
+    <!-- barra de ferramentas -->
+    <?php WC_Serveloja_Modulos::ferramentas(); ?>
+
+    <div class="clear"></div>
+
     <h2>
         Selecione as bandeiras com as quais você irá receber pagamentos
     </h2>
