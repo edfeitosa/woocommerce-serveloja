@@ -288,28 +288,54 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 return true;
             }
 
+            function compareDatas(valCartao) { 
+                var hoje = new Date();
+                var dadosData = valCartao.split("/");
+                var validade = new Date(dadosData[0] + "/01/" + dadosData[1]);
+                if (validade > hoje) {
+                    return true;
+                } else {
+                    $("#submit-serveloja-payment-form").hide();
+                    return false;
+                }
+            }
+
             $(document).ready(function() {
                 $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #DDDCelular, #NrCelular").live("click", function() {
                     var cpfCnpj = $("#CpfCnpjComprador").val();
-                    console.log(cpfCnpj);
                     if (cpfCnpj != "") {
                         var cpfCnpj = cpfCnpj.replace(/[^\d]+/g,\'\');
                         if (cpfCnpj.length == 11) {
                             if (validarCPF(cpfCnpj) == false) {
                                 Modal("erro", "Algo está errado...", "Informe um número de CPF válido", "", "bgModal_interno");
+                                $("#submit-serveloja-payment-form").hide();
                             }
                         } else if (cpfCnpj.length == 14) {
                             if (validarCNPJ(cpfCnpj) == false) {
                                 Modal("erro", "Algo está errado...", "Informe um número de CNPJ válido", "", "bgModal_interno");
+                                $("#submit-serveloja-payment-form").hide();
                             }
                         } else if (cpfCnpj.length != 11 || cpfCnpj.length != 14) {
                             Modal("erro", "Algo está errado...", "Informe um número de CPF ou CNPJ válido", "", "bgModal_interno");
+                            $("#submit-serveloja-payment-form").hide();
                         }
                     }
                 });
 
+                $(document).ready(function() {
+                    console.log(new Date());
+                    $("#nmTitular, #NrCartao, #CpfCnpjComprador, #CodSeguranca, #DDDCelular, #NrCelular").live("click", function() {
+                        var DataValidade = $("#DataValidade").val();
+                        if (DataValidade != "" && DataValidade != "__/____") {
+                            if (compareDatas(DataValidade) == false) {
+                                Modal("erro", "Algo está errado...", "A data de validade do cartão <b>(" + DataValidade + ")</b>, aparentemente já experiou", "", "bgModal_interno");
+                            }
+                        }
+                    });
+                });
+
                 $("#submit-serveloja-payment-form").hide();
-                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #colunaEsq, #DDDCelular, #NrCelular").live("mousemove", function() {
+                $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #colunaEsq, #DDDCelular, #NrCelular, #CpfCnpjComprador").live("mousemove", function() {
                     var isChecked = $("input[name=bandeira_cartao]:checked").val();
                     if (!isChecked ||
                         $("#nmTitular").val() == "" ||
@@ -317,7 +343,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                         $("#DataValidade").val() == "" ||
                         $("#CodSeguranca").val() == "" ||
                         $("#DDDCelular").val() == "" ||
-                        $("#NrCelular").val() == ""
+                        $("#NrCelular").val() == "" ||
+                        $("#CpfCnpjComprador").val() == ""
                     ) {
                         $("#submit-serveloja-payment-form").hide();
                     } else {
@@ -387,7 +414,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                     "<div class=\'clear\'></div>" +
                     "<div id=\'senha\'></div>" +
                     "<div class=\'coluna50\'>" +
-                        "<div class=\'tituloInput margin_top\'>CPF ou CNPJ do comprador</div>" +
+                        "<div class=\'tituloInput margin_top\'>CPF ou CNPJ do comprador (*)</div>" +
                         "<input type=\'text\' name=\'CpfCnpjComprador\' class=\'input input_maior input_sborda coluna96\' id=\'CpfCnpjComprador\' value=\'' . $CpfCnpjComprador . '\' />" +
                     "</div>" +
                     "<div class=\'coluna25_left\'>" +
@@ -489,7 +516,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 "SenhaCartao"      => $_POST['SenhaCartao'],
                 "DDDCelular"       => $_POST['DDDCelular'],
                 "NrCelular"        => preg_replace("/[^0-9]/", "", $_POST['NrCelular']),
-                "DsObservacao"     => "Venda de produtos em sua loja utilizando Woocommerce Serveloja"
+                "DsObservacao"     => "Venda de produtos na loja utilizando Woocommerce Serveloja. Número do pedido: #" . $order->get_order_number()
             );
 
             // envia dados via API
@@ -510,7 +537,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 ');
             } else if ($resposta['HttpStatusCode'] == 200) {
                 // adiciona status na loja
-                $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja.', 'woocommerce-serveloja' ));
+                $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja. Código da transação: ' . $resposta['Container'] . '.', 'woocommerce-serveloja' ));
                 // reduz estoque, se houver
                 $order->reduce_order_stock();
                 // limpa carrinho
