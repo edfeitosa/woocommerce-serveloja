@@ -31,7 +31,7 @@
     <p><i>Selecione os cartões que você utilizará para receber pagamentos em sua loja virtual. Após concluir, clique no botão <b>"Salvar"</b>.</i></p>
 
     <?php $cartoes = $funcoes::lista_cartoes(); ?>
-    
+
     <form method="post" action="" name="cartoes">
         <?php echo $funcoes::tabela_cartoes($cartoes, $cartoes_salvos); ?>
         <div class="clear"></div>

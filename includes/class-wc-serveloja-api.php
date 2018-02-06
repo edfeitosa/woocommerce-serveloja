@@ -16,20 +16,20 @@ if (!defined('ABSPATH')) {
 class WC_Serveloja_API {
 
 	private function servidor() {
-		return "http://desenvolvimento.redeserveloja.com/Novo/WebApi/";
+		return "https://sistemaserveloja.com.br/gtw/webapi/";
 	}
 
 	public function metodos_get($url, $param, $authorization, $applicationId) {
 		$con = curl_init();
-		curl_setopt($con, CURLOPT_URL, WC_Serveloja_API::servidor() . $url . "?" . $param);
-		curl_setopt($con, CURLOPT_CUSTOMREQUEST, "GET");
-		curl_setopt($con, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-		curl_setopt($con, CURLOPT_HTTPHEADER, array(
-				'Content-Type: application/json',
-				'Authorization: ' . $authorization . '',
-				'ApplicationId: ' . $applicationId . ''
-			)
-		);
+		curl_setopt_array($con, array(
+			CURLOPT_CUSTOMREQUEST => "GET",
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_URL => WC_Serveloja_API::servidor() . $url . $param,
+			CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'],
+			'Content-Type: application/json',
+			'Authorization: ' . $authorization . '',
+			'ApplicationId: ' . $applicationId . ''
+		));
 		$data = curl_exec($con);
 		curl_close($con);
 		return $data;

@@ -50,7 +50,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             'enabled' => array(
                 'title'       => __('Habilitar/Desabilitar', 'woocommerce-serveloja'),
                 'type'        => 'checkbox',
-                'label'       => __('Utilizar <b>Serveloja Woocommerce</b> para receber pagamentos', 'woocommerce-serveloja'),
+                'label'       => __('Utilizar <b>WooCommerce Serveloja</b> para receber pagamentos', 'woocommerce-serveloja'),
                 'default'     => 'yes'
             )
         );
@@ -323,7 +323,6 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 });
 
                 $(document).ready(function() {
-                    console.log(new Date());
                     $("#nmTitular, #NrCartao, #CpfCnpjComprador, #CodSeguranca, #DDDCelular, #NrCelular").live("click", function() {
                         var DataValidade = $("#DataValidade").val();
                         if (DataValidade != "" && DataValidade != "__/____") {
@@ -366,12 +365,12 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function apl_authorization() {
+    public function apl_authorization() {
         $authorization = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_token;
         return $authorization;
     }
 
-    private function apl_applicatioId() {
+    public function apl_applicatioId() {
         $applicatioId = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_nome;
         return $applicatioId;
     }
@@ -522,20 +521,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             // envia dados via API
             $resposta = json_decode(WC_Serveloja_API::metodos_post('Vendas/EfetuarVendaCredito', $dados, $this->apl_authorization(), $this->apl_applicatioId()), true);
 
-            if ($resposta['HttpStatusCode'] == '500') {
-                wc_enqueue_js('
-                    $(document).ready(function () {
-                        console.log("Testando");
-                        Modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resposta['Mensagem'])) . '", "", "bgModal_interno");
-                    });
-                ');
-            } else if ($resposta['HttpStatusCode'] == 401) {
-                wc_enqueue_js('
-                    $(document).ready(function () {
-                        Modal("erro", "Algo está errado...", "Ocorreu um erro em nossa loja. Entre em contato com o administrador.", "", "bgModal_interno");
-                    });
-                ');
-            } else if ($resposta['HttpStatusCode'] == 200) {
+            if ($resposta['HttpStatusCode'] == 200) {
                 // adiciona status na loja
                 $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja. Código da transação: ' . $resposta['Container'] . '.', 'woocommerce-serveloja' ));
                 // reduz estoque, se houver
@@ -546,6 +532,12 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                     $(document).ready(function () {
                         $("#formPagamento").hide();
                         Modal("sucesso", "Sucesso", "Sua compra foi realizada com sucesso. Muito obrigado por utilizar os serviços da <b>Serveloja</b>", "' . get_option('home') . esc_url('/loja') . '", "bgModal");
+                    });
+                ');
+            } else {
+                wc_enqueue_js('
+                    $(document).ready(function () {
+                        Modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resposta['Mensagem'])) . '", "", "bgModal_interno");
                     });
                 ');
             }

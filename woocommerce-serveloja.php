@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Woocommerce Serveloja
+ * Plugin Name: WooCommerce Serveloja
  * Plugin URI: http://www.serveloja.com.br
- * Description: Plugin para realização de pagamentos via lojas virtuais com Woocommerce, utilizando soluções fornecidas pela Serveloja.
+ * Description: Plugin para realização de pagamentos via lojas virtuais com WooCommerce, utilizando soluções fornecidas pela Serveloja.
  * Version: 1.0
  * Author: TI Serveloja
  * Author URI: http://www.serveloja.com.br

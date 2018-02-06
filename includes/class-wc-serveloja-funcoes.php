@@ -128,6 +128,8 @@ class WC_Serveloja_Funcoes {
             array("CodigoBandeira" => "6", "NomeBandeira" => "SOROCRED", "PossuiCCV" => true, "PossuiSenha" => false),
             array("CodigoBandeira" => "1", "NomeBandeira" => "VISA", "PossuiCCV" => true, "PossuiSenha" => false)
         );
+
+        //return json_decode(WC_Serveloja_API::metodos_get('Cartao/ObterBandeirasValidas', '', WC_Serveloja_Gateway::apl_authorization(), WC_Serveloja_Gateway::apl_applicatioId()), true); 
     }
 
     public function insert_cartoes($posicao, $car_cod, $car_bandeira, $car_parcelas) {
