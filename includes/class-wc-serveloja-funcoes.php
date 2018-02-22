@@ -116,20 +116,9 @@ class WC_Serveloja_Funcoes {
 
     // cartões
     public function lista_cartoes() {
-        return array(
-            array("CodigoBandeira" => "2", "NomeBandeira" => "AMEX", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "18", "NomeBandeira" => "ASSOMISE", "PossuiCCV" => true, "PossuiSenha" => true),
-            array("CodigoBandeira" => "4", "NomeBandeira" => "DINERS", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "16", "NomeBandeira" => "ELO", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "10", "NomeBandeira" => "FORTBRASIL", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "7", "NomeBandeira" => "HIPER", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "5", "NomeBandeira" => "HIPERCARD", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "3", "NomeBandeira" => "MASTERCARD", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "6", "NomeBandeira" => "SOROCRED", "PossuiCCV" => true, "PossuiSenha" => false),
-            array("CodigoBandeira" => "1", "NomeBandeira" => "VISA", "PossuiCCV" => true, "PossuiSenha" => false)
-        );
-
-        //return json_decode(WC_Serveloja_API::metodos_get('Cartao/ObterBandeirasValidas', '', WC_Serveloja_Gateway::apl_authorization(), WC_Serveloja_Gateway::apl_applicatioId()), true); 
+        $authorization = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_token;
+        $applicatioId = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_nome;
+        return WC_Serveloja_API::metodos_get('Cartao/ObterBandeirasValidas', "", $authorization, $applicatioId);
     }
 
     public function insert_cartoes($posicao, $car_cod, $car_bandeira, $car_parcelas) {
@@ -153,7 +142,7 @@ class WC_Serveloja_Funcoes {
         }
     }
 
-    public function cartoes_salvos() {
+    private function cartoes_salvos() {
         global $wpdb;
         $rows = $wpdb->get_results("SELECT car_cod, car_bandeira, car_parcelas FROM " . $wpdb->prefix . "cartoes");
         if ($wpdb->last_error) {
@@ -186,7 +175,10 @@ class WC_Serveloja_Funcoes {
         return $retorno;
     }
 
-    public function tabela_cartoes($cartoes, $cartoes_banco) {
+    public function tabela_cartoes() {
+        $lista_cartoes = WC_Serveloja_Funcoes::lista_cartoes();
+        $cartoes = json_decode($lista_cartoes["body"], true);
+        $cartoes_banco = WC_Serveloja_Funcoes::cartoes_salvos();
         $quant_parcelas = 12;
         $array_cod = array();
         $array_parcelas = array();
@@ -202,10 +194,10 @@ class WC_Serveloja_Funcoes {
         '<td class="celulathead celulacentralizar" style="width: 30%;">Em quantas parcelas?</td>' .
         '</tr>' .
         '</thead>';
-        for ($i = 0; $i < count($cartoes); $i++) {
+        for ($i = 0; $i < count($cartoes["Container"]); $i++) {
             if ($i % 2 == 0) { $css = ''; } else { $css = 'impar'; }
             // verifica se existe item em array
-            if (in_array($cartoes[$i]['CodigoBandeira'], $array_cod)) {
+            if (in_array($cartoes["Container"][$i]['CodigoBandeira'], $array_cod)) {
                 $css = 'no_banco';
                 $checado = 'checked';
             } else {
@@ -214,15 +206,15 @@ class WC_Serveloja_Funcoes {
             }
             $retorno .= '<tr>' .
             '<td class="celulabody ' . $css . '">' . 
-            '<img class="img_tabela" src="' . PASTA_PLUGIN . 'assets/images/' . strtolower($cartoes[$i]["NomeBandeira"]) . '.png" title="' . $cartoes[$i]["NomeBandeira"] .'" alt="' . strtolower($cartoes[$i]["NomeBandeira"]) . '" />' .
-            $cartoes[$i]["NomeBandeira"] . 
+            '<img class="img_tabela" src="' . PASTA_PLUGIN . 'assets/images/' . strtolower($cartoes["Container"][$i]["NomeBandeira"]) . '.png" title="' . $cartoes["Container"][$i]["NomeBandeira"] .'" alt="' . strtolower($cartoes["Container"][$i]["NomeBandeira"]) . '" />' .
+            $cartoes["Container"][$i]["NomeBandeira"] . 
             '</td>' .
             '<td class="celulabody celulacentralizar ' . $css . '"><input ' . $checado . ' type="checkbox" name="posicao[]" value="' . $i .'" /> Sim' .
-            '<input type="hidden" name="car_bandeira[]" value="' . $cartoes[$i]["NomeBandeira"] . '" />' .
-            '<input type="hidden" name="car_cod[]" value="' . $cartoes[$i]["CodigoBandeira"] . '" />' .
+            '<input type="hidden" name="car_bandeira[]" value="' . $cartoes["Container"][$i]["NomeBandeira"] . '" />' .
+            '<input type="hidden" name="car_cod[]" value="' . $cartoes["Container"][$i]["CodigoBandeira"] . '" />' .
             '</td>' .
             '<td class="celulabody celulacentralizar ' . $css . '">' .
-            WC_Serveloja_Funcoes::parcelas($quant_parcelas, $cartoes[$i]["NomeBandeira"], $array_parcelas) .
+            WC_Serveloja_Funcoes::parcelas($quant_parcelas, strtolower($cartoes["Container"][$i]["NomeBandeira"]), $array_parcelas) .
             '</td>' .
             '</tr>';
         }

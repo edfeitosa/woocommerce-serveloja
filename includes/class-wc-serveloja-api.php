@@ -13,46 +13,50 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-class WC_Serveloja_API {
+class WCSVL_Serveloja_API {
 
-	private function servidor() {
-		return "https://sistemaserveloja.com.br/gtw/webapi/";
+	private function WCSVL_servidor() {
+		// return "https://sistemaserveloja.com.br/gtw/webapi/";
+		return "http://desenvolvimento.redeserveloja.com/Novo/WebApi/";
 	}
 
-	public function metodos_get($url, $param, $authorization, $applicationId) {
-		$con = curl_init();
-		curl_setopt_array($con, array(
-			CURLOPT_CUSTOMREQUEST => "GET",
-			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_URL => WC_Serveloja_API::servidor() . $url . $param,
-			CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'],
-			'Content-Type: application/json',
-			'Authorization: ' . $authorization . '',
-			'ApplicationId: ' . $applicationId . ''
-		));
-		$data = curl_exec($con);
-		curl_close($con);
-		return $data;
-	}
-
-	public function metodos_post($url, $param, $authorization, $applicationId) {
-		$data_string = json_encode($param);
-		$con = curl_init();
-		curl_setopt($con, CURLOPT_URL, WC_Serveloja_API::servidor() . $url);
-		curl_setopt($con, CURLOPT_POST, 1);
-		curl_setopt($con, CURLOPT_POSTFIELDS, $data_string);
-		curl_setopt($con, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($con, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-		curl_setopt($con, CURLOPT_HTTPHEADER, array(
-				'Authorization: Basic ' . $authorization,
-				'ApplicationId: ' . $applicationId,
-				'Content-Type: application/json',
-				'Content-Length: ' . strlen($data_string)
+	public function WCSVL_metodos_get($url, $param, $authorization, $applicationId) {
+		$args = array(
+			'blocking' => true,
+			'timeout' => '5000',
+			'headers' => array(
+				'Authorization' => 'Basic ' . $authorization,
+				'ApplicationId' => $applicationId,
+				'Content-Type' => 'application/json',
+				'User-Agent' => $_SERVER['HTTP_USER_AGENT']
 			)
 		);
-		$data = curl_exec($con);
-		curl_close($con);
-		return $data;
+		$response = wp_remote_get(WC_Serveloja_API::WCSVL_servidor() . $url, $args);
+		if (is_wp_error($response)) {
+			return $response->get_error_message();
+		} else {
+			return $response;
+		}
+	}
+
+	public function WCSVL_metodos_post($url, $param, $authorization, $applicationId) {
+		$args = array(
+			'blocking' => true,
+			'timeout' => '5000',
+			'headers' => array(
+				'Authorization' => 'Basic ' . $authorization,
+				'ApplicationId' => $applicationId,
+				'Content-Type' => 'application/json',
+				'User-Agent' => $_SERVER['HTTP_USER_AGENT']
+			),
+			'body' => json_encode($param)
+		);
+		$response = wp_remote_post(WC_Serveloja_API::WCSVL_servidor() . $url, $args);
+		if (is_wp_error($response)) {
+			return $response->get_error_message();
+		} else {
+			return $response;
+		}
 	}
     
 } ?>

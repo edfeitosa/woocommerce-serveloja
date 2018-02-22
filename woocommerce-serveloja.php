@@ -13,8 +13,8 @@ if (!defined('ABSPATH')) {
 }
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    if (!class_exists('WC_Serveloja')) {
-        class WC_Serveloja {
+    if (!class_exists('WCSVL_Serveloja')) {
+        class WCSVL_Serveloja {
 
             const VERSION = '1.0';
 
@@ -23,9 +23,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             private function __construct() {
                 if (class_exists('WC_Payment_Gateway')) {
                     
-                    $this->includes();
-                    add_filter('woocommerce_payment_gateways', array($this, 'add_gateway'));
-                    add_filter('plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links'));
+                    $this->WCSVL_includes();
+                    add_filter('woocommerce_payment_gateways', array($this, 'WCSVL_add_gateway'));
+                    add_filter('plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'WCSVL_plugin_action_links'));
                 
                     // define diretório do plugin
                     define('PASTA_PLUGIN', WP_PLUGIN_URL.'/woocommerce-serveloja/');
@@ -34,20 +34,20 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     define('WP_UNINSTALL_PLUGIN', PASTA_PLUGIN.'uninstall.php');
 
                     // cria tabelas no banco
-                    register_activation_hook(__FILE__, WC_Serveloja::create_db_table());
+                    register_activation_hook(__FILE__, WCSVL_Serveloja::WCSVL_create_db_table());
 
                     // link no menu principal do wordpress
-                    $this->menu();
+                    $this->WCSVL_menu();
                 } else {
                     add_action('admin_notices', array( $this, 'woocommerce_missing_notice'));
                 }
             }
 
-            public static function get_templates_path() {
+            public static function WCSVL_get_templates_path() {
                 return plugin_dir_path( __FILE__ ) . 'templates/';
             }
 
-            public static function get_instance() {
+            public static function WCSVL_get_instance() {
                 if ( null === self::$instance ) {
                     self::$instance = new self;
                 }
@@ -55,14 +55,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
             
             // adiciona link na página de edição de plugins
-            public function plugin_action_links( $links ) {
+            public function WCSVL_plugin_action_links( $links ) {
                 $plugin_links   = array();
                 $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=serveloja' ) ) . '">' . __( 'Woocommerce', 'woocommerce-serveloja' ) . '</a>';
                 $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=home' ) ) . '">Configurações</a>';
                 return array_merge($plugin_links, $links);
             }
 
-            private function includes() {
+            private function WCSVL_includes() {
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-gateway.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-funcoes.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-api.php';
@@ -72,12 +72,12 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 include_once dirname( __FILE__ ) . '/templates/home.php';
             }
             
-            public function add_gateway($methods) {
+            public function WCSVL_add_gateway($methods) {
                 $methods[] = 'WC_Serveloja_Gateway';
                 return $methods;
             }
 
-            private function create_db_table() {
+            private function WCSVL_create_db_table() {
                 global $wpdb;
                 $tabela_aplicacao = $wpdb->prefix . 'aplicacao';
                 $tabela_cartoes = $wpdb->prefix . 'cartoes';
@@ -103,9 +103,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 dbDelta($sql);
             }
 
-            private function menu() {
-                add_action('admin_menu', 'addCustomMenuItem');
-                function addCustomMenuItem() {
+            private function WCSVL_menu() {
+                add_action('admin_menu', 'WCSVL_addCustomMenuItem');
+                function WCSVL_addCustomMenuItem() {
                     add_menu_page('Serveloja', 'Serveloja', 'manage_options', 'home', 'function_home', 'dashicons-businessman', 6);
                     add_submenu_page('home', 'Serveloja', 'Configurações', 'manage_options', 'configuracoes', 'function_configuracoes');
                     add_submenu_page('home', 'Serveloja', 'Cartões', 'manage_options', 'cartoes', 'function_cartoes');
@@ -116,7 +116,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     }
 
     // Em caso de desativação do plugin
-    function truncate_db_table() {
+    function WCSVL_truncate_db_table() {
         global $wpdb;
         $tabela_aplicacao = $wpdb->prefix . 'aplicacao';
         $tabela_cartoes = $wpdb->prefix . 'cartoes';
@@ -125,7 +125,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         delete_option("serveloja");
         delete_site_option('serveloja');
     }
-    register_deactivation_hook(__FILE__, 'truncate_db_table');
+    register_deactivation_hook(__FILE__, 'WCSVL_truncate_db_table');
 
-    add_action('plugins_loaded', array('WC_Serveloja', 'get_instance'));
+    add_action('plugins_loaded', array('WCSVL_Serveloja', 'WCSVL_get_instance'));
 } ?>

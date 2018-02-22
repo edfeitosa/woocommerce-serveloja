@@ -4,8 +4,8 @@
  *
  * Extende as funções de pagamento, utilizando os serviços da Serveloja.
  *
- * @class   WC_Serveloja_Gateway
- * @extends WC_Payment_Gateway
+ * @class   WCSVL_Serveloja_Gateway
+ * @extends WCSVL_Payment_Gateway
  * @version 1.0.0
  * @author  Eduardo Feitosa
  */
@@ -14,7 +14,7 @@ if (!defined( 'ABSPATH' )) {
     exit;
 }
 
-class WC_Serveloja_Gateway extends WC_Payment_Gateway {
+class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id                 = 'serveloja';
@@ -26,7 +26,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         $this->order_button_text  = __('Pagar agora', 'woocommerce-serveloja');
 
         // forms
-        $this->init_form_fields();
+        $this->WCSVL_init_form_fields();
 
         // settings
         $this->init_settings();
@@ -40,7 +40,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
     }
 
     // form na administração do woocommerce
-    function init_form_fields() {
+    function WCSVL_init_form_fields() {
         $this->form_fields = array(
             'integration' => array(
 				'title'       => __('Configuração da aplicação', 'woocommerce-serveloja'),
@@ -56,7 +56,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         );
     }
 
-    private function modal() {
+    private function WCSVL_modal() {
         wc_enqueue_js('
             $("#bgModal").hide();
             function HtmlModal(tipo, titulo, mensagem, url) {
@@ -91,7 +91,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function cpf_cnpj() {
+    private function WCSVL_cpf_cnpj() {
         wc_enqueue_js('
             function cpf_cnpj (id) {
                 $(document).ready(function() {
@@ -110,7 +110,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function mascaras() {
+    private function WCSVL_mascaras() {
         wc_enqueue_js('
             function mascaras(campo, mascara) {
                 $(document).ready(function () {
@@ -120,7 +120,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function mascaraValor() {
+    private function WCSVL_mascaraValor() {
         wc_enqueue_js('
             function mascaraValor(value) {
                 return value.formatMoney(2, ",", ".");
@@ -139,8 +139,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function detalhes_cartao($total) {
-        echo $this->mascaraValor();
+    private function WCSVL_detalhes_cartao($total) {
+        echo $this->WCSVL_mascaraValor();
         wc_enqueue_js('
             $(document).ready(function () {
                 $("#bgModal_interno").hide();
@@ -148,7 +148,6 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 $("input[name=bandeira_cartao]:checked").live("click", function() {
                     var isChecked = $(this).val();
                     if (isChecked) {
-
                         $("#exibeCartao").show();
                         var valor = ' . $total . ';
                         var qtd = isChecked.split("-");
@@ -157,7 +156,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                         var select = "<div class=\'dir_detalhes\'>";
                             select += "<div class=\'tituloInput\' style=\'margin-top:0px;\'>Selecione a quantidade de parcelas</div>";
                             select += "<select class=\'select input_maior select_sborda coluna100\' id=\'QtParcela\' name=\'QtParcela\'>";
-                                for(var i = 1; i <= qtd[0]; i++) {
+                                for (var i = 1; i <= qtd[0]; i++) {
                                     select += "<option value=\'" + i + "\'>" + i + "x - R$ " + mascaraValor(valor / i) + "</option>";
                                 }
                             select += "</select>";
@@ -183,8 +182,8 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function lista_cartoes() {
-        $cartoes_banco = WC_Serveloja_Funcoes::cartoes_salvos();
+    private function WCSVL_lista_cartoes() {
+        $cartoes_banco = WCSVL_Serveloja_Funcoes::WCSVL_cartoes_salvos();
         $lista = "";
             if (count($cartoes_banco) > 0) {
                 $lista .= "<table cellspacing='0' cellpadding='0' class='tabela'>";
@@ -202,7 +201,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         return $lista;
     }
 
-    private function validacoes() {
+    private function WCSVL_validacoes() {
         wc_enqueue_js('
             function validarCPF (cpf) {
                 var Soma;
@@ -355,7 +354,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function alert_inicio_validacao() {
+    private function WCSVL_alert_inicio_validacao() {
         wc_enqueue_js('
             $(document).ready(function() {
                 $("#submit-serveloja-payment-form").live("click", function () {
@@ -365,19 +364,19 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    public function apl_authorization() {
-        $authorization = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_token;
+    public function WCSVL_apl_authorization() {
+        $authorization = (WCSVL_Serveloja_Funcoes::WCSVL_aplicacao() == "0") ? "" : WCSVL_Serveloja_Funcoes::WCSVL_aplicacao()[0]->apl_token;
         return $authorization;
     }
 
-    public function apl_applicatioId() {
-        $applicatioId = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_nome;
+    public function WCSVL_apl_applicatioId() {
+        $applicatioId = (WCSVL_Serveloja_Funcoes::WCSVL_aplicacao() == "0") ? "" : WCSVL_Serveloja_Funcoes::WCSVL_aplicacao()[0]->apl_nome;
         return $applicatioId;
     }
 
-    private function form_payment($order_id) {
+    private function WCSVL_form_payment($order_id) {
         $order = wc_get_order($order_id);
-        if ($this->apl_authorization() != "") {
+        if ($this->WCSVL_apl_authorization() != "") {
             // verifica se existe post
             $nmTitular = isset($_POST['nmTitular']) ? $_POST['nmTitular'] : '';
             $NrCartao = isset($_POST['NrCartao']) ? $_POST['NrCartao'] : '';
@@ -437,7 +436,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         return $retorno;
     }
 
-    private function modal_payment($order_id) {
+    private function WCSVL_modal_payment($order_id) {
         $order = wc_get_order($order_id);
         echo $this->cpf_cnpj();
         echo $this->detalhes_cartao($order->get_total());
@@ -470,14 +469,14 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    public function generate_serveloja_form($order_id) {
+    public function WCSVL_generate_serveloja_form($order_id) {
         $order = wc_get_order($order_id);
         echo $this->modal_payment($order_id);
         return '<div id="bgModal"></div>';
     }
     
     // processa pagamento
-    public function process_payment($order_id) {
+    public function WCSVL_process_payment($order_id) {
         $order = wc_get_order($order_id);
         return array(
             'result'   => 'success',
@@ -485,14 +484,14 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         );
     }
 
-    private function UrlAtual () {
+    private function WCSVL_UrlAtual () {
         $dominio= $_SERVER['HTTP_HOST'];
         $url = "http://" . $dominio. $_SERVER['REQUEST_URI'];
         return $url;
     }
 
     // página de pagamento com modal
-    public function receipt_page($order_id) {
+    public function WCSVL_receipt_page($order_id) {
         global $woocommerce;
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/client.css" rel="stylesheet" />';
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/forms.css" rel="stylesheet" />';
@@ -500,7 +499,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         echo '<script type="text/javascript" src="' . PASTA_PLUGIN . 'assets/scripts/maskedinput.js"></script>';
         $order = wc_get_order( $order_id );
 
-        echo $this->generate_serveloja_form($order_id);
+        echo $this->WCSVL_generate_serveloja_form($order_id);
         
         if (isset($_POST['finalizar'])) {
             $dados = array(
@@ -519,11 +518,12 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             );
 
             // envia dados via API
-            $resposta = json_decode(WC_Serveloja_API::metodos_post('Vendas/EfetuarVendaCredito', $dados, $this->apl_authorization(), $this->apl_applicatioId()), true);
+            $resposta = WCSVL_Serveloja_API::WCSVL_metodos_get('Vendas/EfetuarVendaCredito', $dados, $this->WCSVL_apl_authorization(), $this->WCSVL_apl_applicatioId());
+            $resultado = json_decode($resposta["body"], true);
 
-            if ($resposta['HttpStatusCode'] == 200) {
+            if ($resultado['HttpStatusCode'] == 200) {
                 // adiciona status na loja
-                $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja. Código da transação: ' . $resposta['Container'] . '.', 'woocommerce-serveloja' ));
+                $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja. Código da transação: ' . $resultado['Container'] . '.', 'woocommerce-serveloja' ));
                 // reduz estoque, se houver
                 $order->reduce_order_stock();
                 // limpa carrinho
@@ -537,7 +537,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             } else {
                 wc_enqueue_js('
                     $(document).ready(function () {
-                        Modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resposta['Mensagem'])) . '", "", "bgModal_interno");
+                        Modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resultado['Mensagem'])) . '", "", "bgModal_interno");
                     });
                 ');
             }
