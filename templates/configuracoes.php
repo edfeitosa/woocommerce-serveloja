@@ -1,4 +1,4 @@
-<?php function function_configuracoes() { ?>
+<?php function wcsvl_function_configuracoes() { ?>
 
   <!-- scripts e estilos -->
   <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/style.css" rel="stylesheet" />
@@ -6,7 +6,7 @@
   <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
 
   <?php // verifica se já existem informações sobre a aplicação
-    $dados = WC_Serveloja_Funcoes::aplicacao();
+    $dados = WC_Serveloja_Funcoes::wcsvl_aplicacao();
     $apl_id = ($dados == "0") ? "0" : $dados[0]->apl_id;
     $apl_nome = ($dados == "0") ? "" : $dados[0]->apl_nome;
     $apl_token_teste = ($dados == "0") ? "" : $dados[0]->apl_token_teste;
@@ -16,7 +16,7 @@
   ?>
 
   <!-- cabeçalho -->
-  <?php WC_Serveloja_Modulos::cabecalho(); ?>
+  <?php WC_Serveloja_Modulos::wcsvl_cabecalho(); ?>
 
   <?php // post configurações principais
     if (isset($_POST["salvar_config"])) {
@@ -29,14 +29,14 @@
       // executa
       // echo 'Nome: ' . $_POST["apl_nome"] . ' / Token Teste: ' . $_POST["apl_token_teste"] . ' / Token: ' . $_POST["apl_token"] . ' / Prefixo: ' . $_POST["apl_prefixo"] . ' / E-mail: ' . $_POST["apl_email"] . ' / Id: ' . $_POST["apl_id"];
       
-      echo WC_Serveloja_Funcoes::save_configuracoes($_POST["apl_nome"], $_POST["apl_token_teste"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_id"]);
-      $dados = WC_Serveloja_Funcoes::aplicacao();
+      echo WC_Serveloja_Funcoes::wcsvl_save_configuracoes($_POST["apl_nome"], $_POST["apl_token_teste"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_id"]);
+      $dados = WC_Serveloja_Funcoes::wcsvl_aplicacao();
     } ?>
 
   <h1>Configurações</h1>
 
   <!-- barra de ferramentas -->
-  <?php WC_Serveloja_Modulos::ferramentas(); ?>
+  <?php WC_Serveloja_Modulos::wcsvl_ferramentas(); ?>
 
   <div class="clear"></div>
 

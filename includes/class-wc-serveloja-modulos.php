@@ -16,7 +16,7 @@ if (!defined( 'ABSPATH' )) {
 
 class WC_Serveloja_Modulos {
 
-    public function cabecalho() {
+    public function wcsvl_cabecalho() {
         $html = '<div id="headerPlugin">' .
             '<div id="logo">' .
                 '<a href="admin.php?page=home">' .
@@ -27,7 +27,7 @@ class WC_Serveloja_Modulos {
         echo $html;
     }
 
-    public function ferramentas() {
+    public function wcsvl_ferramentas() {
         $html = '<div class="barraFerramentas">' .
             '<div class="botao">' .
                 '<a href="admin.php?page=home">' .

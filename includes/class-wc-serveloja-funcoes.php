@@ -16,22 +16,22 @@ if (!defined( 'ABSPATH' )) {
 class WC_Serveloja_Funcoes {
 
     // verifica se token informado por usuário é válido
-    private function valida_token($url, $method, $param) {
-        return WC_Serveloja_Api::metodos_acesso_api($url, $method, $param);
+    private function wcsvl_valida_token($url, $method, $param) {
+        return WC_Serveloja_Api::wcsvl_metodos_acesso_api($url, $method, $param);
     }
 
     // fecha div via javascript após alguns segundos
-    private function script($div) {
+    private function wcsvl_script($div) {
         return '<script type="text/javascript">Fecha_mensagem("' . $div . '");</script>';
     }
 
     // exibe a mensagem e classe conforme setado
-    private function div_resposta($id, $class, $mensagem) {
-        return '<div id="' . $id . '" class="' . $class . '">' . $mensagem . '</div>' . WC_Serveloja_Funcoes::script($id);
+    private function wcsvl_div_resposta($id, $class, $mensagem) {
+        return '<div id="' . $id . '" class="' . $class . '">' . $mensagem . '</div>' . WC_Serveloja_Funcoes::wcsvl_script($id);
     }
 
     // ações no banco para aplicação
-    private function insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email) {
+    private function wcsvl_insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email) {
         global $wpdb;
         $wpdb->insert(
             $wpdb->prefix . "aplicacao",
@@ -44,13 +44,13 @@ class WC_Serveloja_Funcoes {
             array('%s', '%s', '%s', '%s', '%s')
         );
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "sucesso", "Os dados foram adicionados com sucesso");
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "sucesso", "Os dados foram adicionados com sucesso");
         }
     }
 
-    private function update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
+    private function wcsvl_update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
         global $wpdb;
         $wpdb->update(
             $wpdb->prefix . "aplicacao",
@@ -65,14 +65,14 @@ class WC_Serveloja_Funcoes {
             array('%s')
         );
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "sucesso", "Os dados foram modificados com sucesso");
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "sucesso", "Os dados foram modificados com sucesso");
         }
     }
 
     // validação de e-mail
-    private function valida_email($email) {
+    private function wcsvl_valida_email($email) {
         if ($email == '') {
             return true;
         } else {
@@ -85,26 +85,26 @@ class WC_Serveloja_Funcoes {
     }
 
     // salva dados aplicação
-    public function save_configuracoes($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
+    public function wcsvl_save_configuracoes($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
         if ($apl_nome == "" || $apl_token == "") {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Os campos marcados com (*) devem ser preencidos");
-        } else if (WC_Serveloja_Funcoes::valida_email($apl_email) == false) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Informe um e-mail válido para continuar");
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Os campos marcados com (*) devem ser preencidos");
+        } else if (WC_Serveloja_Funcoes::wcsvl_valida_email($apl_email) == false) {
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Informe um e-mail válido para continuar");
         } else {
             if ($apl_id == "0") {
-                return WC_Serveloja_Funcoes::insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
+                return WC_Serveloja_Funcoes::wcsvl_insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
             } else {
-                return WC_Serveloja_Funcoes::update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
+                return WC_Serveloja_Funcoes::wcsvl_update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
             }
         }
     }
 
     // lista dados da aplicação
-    public function aplicacao() {
+    public function wcsvl_aplicacao() {
         global $wpdb;
         $rows = $wpdb->get_results("SELECT apl_id, apl_nome, apl_token_teste, apl_token, apl_prefixo, apl_email FROM " . $wpdb->prefix . "aplicacao ORDER BY apl_id DESC LIMIT 1");
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
             if (count($rows) == 0) {
                 return "0";
@@ -115,13 +115,13 @@ class WC_Serveloja_Funcoes {
     }
 
     // cartões
-    public function lista_cartoes() {
-        $authorization = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_token;
-        $applicatioId = (WC_Serveloja_Funcoes::aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::aplicacao()[0]->apl_nome;
-        return WC_Serveloja_API::metodos_get('Cartao/ObterBandeirasValidas', "", $authorization, $applicatioId);
+    public function wcsvl_lista_cartoes() {
+        $authorization = (WC_Serveloja_Funcoes::wcsvl_aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::wcsvl_aplicacao()[0]->apl_token;
+        $applicatioId = (WC_Serveloja_Funcoes::wcsvl_aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::wcsvl_aplicacao()[0]->apl_nome;
+        return WC_Serveloja_API::wcsvl_metodos_get('Cartao/ObterBandeirasValidas', "", $authorization, $applicatioId);
     }
 
-    public function insert_cartoes($posicao, $car_cod, $car_bandeira, $car_parcelas) {
+    public function wcsvl_insert_cartoes($posicao, $car_cod, $car_bandeira, $car_parcelas) {
         global $wpdb;
         $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . "cartoes");
         for ($i = 0; $i < count($posicao); $i++) {
@@ -136,13 +136,13 @@ class WC_Serveloja_Funcoes {
             );
         }
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
-            header("location: " . esc_url( admin_url('admin.php?page=cartoes')));
+            header("location: " . esc_url(admin_url('admin.php?page=cartoes')));
         }
     }
 
-    private function cartoes_salvos() {
+    public function wcsvl_cartoes_salvos() {
         global $wpdb;
         $rows = $wpdb->get_results("SELECT car_cod, car_bandeira, car_parcelas FROM " . $wpdb->prefix . "cartoes");
         if ($wpdb->last_error) {
@@ -153,12 +153,12 @@ class WC_Serveloja_Funcoes {
     }
 
     // cartões de crédito
-    public function lista_cartoes_api($url, $method, $param) {
-        return WC_Serveloja_Funcoes::metodos_acesso_api($url, $method, $param);
+    public function wcsvl_lista_cartoes_api($url, $method, $param) {
+        return WC_Serveloja_Funcoes::wcsvl_metodos_acesso_api($url, $method, $param);
     }
 
     // tabela
-    private function parcelas($quant, $bandeira, $parcelas) {
+    private function wcsvl_parcelas($quant, $bandeira, $parcelas) {
         $retorno = '<select name="car_parcelas[]" class="select_menor" style="margin-top: 0px;">';
         for ($i = 1; $i <= intval($quant); $i++) {
             $selected = '';
@@ -175,10 +175,10 @@ class WC_Serveloja_Funcoes {
         return $retorno;
     }
 
-    public function tabela_cartoes() {
-        $lista_cartoes = WC_Serveloja_Funcoes::lista_cartoes();
+    public function wcsvl_tabela_cartoes() {
+        $lista_cartoes = WC_Serveloja_Funcoes::wcsvl_lista_cartoes();
         $cartoes = json_decode($lista_cartoes["body"], true);
-        $cartoes_banco = WC_Serveloja_Funcoes::cartoes_salvos();
+        $cartoes_banco = WC_Serveloja_Funcoes::wcsvl_cartoes_salvos();
         $quant_parcelas = 12;
         $array_cod = array();
         $array_parcelas = array();
@@ -214,7 +214,7 @@ class WC_Serveloja_Funcoes {
             '<input type="hidden" name="car_cod[]" value="' . $cartoes["Container"][$i]["CodigoBandeira"] . '" />' .
             '</td>' .
             '<td class="celulabody celulacentralizar ' . $css . '">' .
-            WC_Serveloja_Funcoes::parcelas($quant_parcelas, strtolower($cartoes["Container"][$i]["NomeBandeira"]), $array_parcelas) .
+            WC_Serveloja_Funcoes::wcsvl_parcelas($quant_parcelas, strtolower($cartoes["Container"][$i]["NomeBandeira"]), $array_parcelas) .
             '</td>' .
             '</tr>';
         }

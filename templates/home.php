@@ -1,11 +1,11 @@
-<?php function function_home() { ?>
+<?php function wcsvl_function_home() { ?>
 
     <!-- scripts e estilos -->
     <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/style.css" rel="stylesheet" />
     <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
 
     <!-- cabeçalho -->
-    <?php WC_Serveloja_Modulos::cabecalho(); ?>
+    <?php WC_Serveloja_Modulos::wcsvl_cabecalho(); ?>
 
     <h1>Woocommerce Serveloja</h1>
     <h2>

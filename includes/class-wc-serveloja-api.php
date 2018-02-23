@@ -13,14 +13,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-class WCSVL_Serveloja_API {
+class WC_Serveloja_API {
 
-	private function WCSVL_servidor() {
+	private function wcsvl_servidor() {
 		// return "https://sistemaserveloja.com.br/gtw/webapi/";
 		return "http://desenvolvimento.redeserveloja.com/Novo/WebApi/";
 	}
 
-	public function WCSVL_metodos_get($url, $param, $authorization, $applicationId) {
+	public function wcsvl_metodos_get($url, $param, $authorization, $applicationId) {
 		$args = array(
 			'blocking' => true,
 			'timeout' => '5000',
@@ -31,7 +31,7 @@ class WCSVL_Serveloja_API {
 				'User-Agent' => $_SERVER['HTTP_USER_AGENT']
 			)
 		);
-		$response = wp_remote_get(WC_Serveloja_API::WCSVL_servidor() . $url, $args);
+		$response = wp_remote_get(WC_Serveloja_API::wcsvl_servidor() . $url, $args);
 		if (is_wp_error($response)) {
 			return $response->get_error_message();
 		} else {
@@ -39,7 +39,7 @@ class WCSVL_Serveloja_API {
 		}
 	}
 
-	public function WCSVL_metodos_post($url, $param, $authorization, $applicationId) {
+	public function wcsvl_metodos_post($url, $param, $authorization, $applicationId) {
 		$args = array(
 			'blocking' => true,
 			'timeout' => '5000',
@@ -51,7 +51,7 @@ class WCSVL_Serveloja_API {
 			),
 			'body' => json_encode($param)
 		);
-		$response = wp_remote_post(WC_Serveloja_API::WCSVL_servidor() . $url, $args);
+		$response = wp_remote_post(WC_Serveloja_API::wcsvl_servidor() . $url, $args);
 		if (is_wp_error($response)) {
 			return $response->get_error_message();
 		} else {

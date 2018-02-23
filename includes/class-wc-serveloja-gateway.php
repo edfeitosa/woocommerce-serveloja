@@ -4,8 +4,8 @@
  *
  * Extende as funções de pagamento, utilizando os serviços da Serveloja.
  *
- * @class   WCSVL_Serveloja_Gateway
- * @extends WCSVL_Payment_Gateway
+ * @class   WC_Serveloja_Gateway
+ * @extends WC_Payment_Gateway
  * @version 1.0.0
  * @author  Eduardo Feitosa
  */
@@ -14,7 +14,7 @@ if (!defined( 'ABSPATH' )) {
     exit;
 }
 
-class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
+class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id                 = 'serveloja';
@@ -26,7 +26,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         $this->order_button_text  = __('Pagar agora', 'woocommerce-serveloja');
 
         // forms
-        $this->WCSVL_init_form_fields();
+        $this->init_form_fields();
 
         // settings
         $this->init_settings();
@@ -40,7 +40,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
     }
 
     // form na administração do woocommerce
-    function WCSVL_init_form_fields() {
+    function init_form_fields() {
         $this->form_fields = array(
             'integration' => array(
 				'title'       => __('Configuração da aplicação', 'woocommerce-serveloja'),
@@ -56,10 +56,10 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         );
     }
 
-    private function WCSVL_modal() {
+    private function wcsvl_modal() {
         wc_enqueue_js('
             $("#bgModal").hide();
-            function HtmlModal(tipo, titulo, mensagem, url) {
+            function wcsvl_htmlModal(tipo, titulo, mensagem, url) {
                 var reply = "";
                 reply += "<div id=\'modal\' class=\'modal modal_" + tipo +  " sombra\'>" +
                     "<div class=\'cabecalho cabecalho_" + tipo +  "\'>" + titulo + "</div>" +
@@ -75,10 +75,10 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                 return reply;
             }
             
-            function Modal(tipo, titulo, mensagem, url, bg) {
+            function wcsvl_modal(tipo, titulo, mensagem, url, bg) {
                 $("#" + bg).fadeIn();
                 setTimeout(function () {
-                    $("#" + bg).html(HtmlModal(tipo, titulo, mensagem, url));
+                    $("#" + bg).html(wcsvl_htmlModal(tipo, titulo, mensagem, url));
                 }, 300);
                 $("#ok, #okConf, #cancela").live("click", function () {
                     $("#" + bg).html("");
@@ -91,9 +91,9 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function WCSVL_cpf_cnpj() {
+    private function wcsvl_cpf_cnpj() {
         wc_enqueue_js('
-            function cpf_cnpj (id) {
+            function wcsvl_cpf_cnpj (id) {
                 $(document).ready(function() {
                     $("#" + id).mask("999.999.999-99?99999");
                     $("#" + id).live("keyup", function (e) {
@@ -110,9 +110,9 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function WCSVL_mascaras() {
+    private function wcsvl_mascaras() {
         wc_enqueue_js('
-            function mascaras(campo, mascara) {
+            function wcsvl_mascaras(campo, mascara) {
                 $(document).ready(function () {
                     $("#" + campo).mask(mascara);
                 });
@@ -120,9 +120,9 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function WCSVL_mascaraValor() {
+    private function wcsvl_mascaraValor() {
         wc_enqueue_js('
-            function mascaraValor(value) {
+            function wcsvl_mascaraValor(value) {
                 return value.formatMoney(2, ",", ".");
             }
 
@@ -139,8 +139,8 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function WCSVL_detalhes_cartao($total) {
-        echo $this->WCSVL_mascaraValor();
+    private function wcsvl_detalhes_cartao($total) {
+        echo $this->wcsvl_mascaraValor();
         wc_enqueue_js('
             $(document).ready(function () {
                 $("#bgModal_interno").hide();
@@ -157,12 +157,12 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                             select += "<div class=\'tituloInput\' style=\'margin-top:0px;\'>Selecione a quantidade de parcelas</div>";
                             select += "<select class=\'select input_maior select_sborda coluna100\' id=\'QtParcela\' name=\'QtParcela\'>";
                                 for (var i = 1; i <= qtd[0]; i++) {
-                                    select += "<option value=\'" + i + "\'>" + i + "x - R$ " + mascaraValor(valor / i) + "</option>";
+                                    select += "<option value=\'" + i + "\'>" + i + "x - R$ " + wcsvl_mascaraValor(valor / i) + "</option>";
                                 }
                             select += "</select>";
                         select += "</div>";
                         select += "<input type=\'hidden\' id=\'Bandeira\' name=\'Bandeira\' value=\'" + qtd[1] + "\' />";
-                        select += "<input type=\'hidden\' id=\'Valor\' name=\'Valor\' value=\'" + mascaraValor(valor) + "\' />";
+                        select += "<input type=\'hidden\' id=\'Valor\' name=\'Valor\' value=\'" + wcsvl_mascaraValor(valor) + "\' />";
                         $("#exibeCartao").html(imagem + select);
 
                         var input_senha = "";
@@ -174,7 +174,6 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                             input_senha += "<input type=\'hidden\' name=\'SenhaCartao\' value=\'\' />";
                             $("#senha").html(input_senha);
                         }
-
                         return true;
                     }
                 });
@@ -182,8 +181,8 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         ');
     }
 
-    private function WCSVL_lista_cartoes() {
-        $cartoes_banco = WCSVL_Serveloja_Funcoes::WCSVL_cartoes_salvos();
+    private function wcsvl_lista_cartoes() {
+        $cartoes_banco = WC_Serveloja_Funcoes::wcsvl_cartoes_salvos();
         $lista = "";
             if (count($cartoes_banco) > 0) {
                 $lista .= "<table cellspacing='0' cellpadding='0' class='tabela'>";
@@ -201,17 +200,14 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         return $lista;
     }
 
-    private function WCSVL_validacoes() {
+    private function wcsvl_valida_cpf() {
         wc_enqueue_js('
-            function validarCPF (cpf) {
+            function wcsvl_validarCPF (cpf) {
                 var Soma;
                 var Resto;
                 Soma = 0;
-
                 cpf = cpf.replace(/[^\d]+/g,\'\');
-            
                 if (cpf == \'\') { return false; }
-
                 if (cpf == "00000000000" || 
                     cpf == "11111111111" || 
                     cpf == "22222222222" || 
@@ -239,15 +235,15 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                 if (Resto != parseInt(cpf.substring(10, 11) ) ) return false;
                 return true;
             }
+        ');
+    }
 
-            function validarCNPJ (cnpj) {
-    
+    private function wcsvl_valida_cnpj() {
+        wc_enqueue_js('
+            function wcsvl_validarCNPJ (cnpj) {
                 cnpj = cnpj.replace(/[^\d]+/g,\'\');
-            
                 if (cnpj == \'\') { return false; }
-                
                 if (cnpj.length != 14) { return false; }
-
                 if (cnpj == "00000000000000" || 
                     cnpj == "11111111111111" || 
                     cnpj == "22222222222222" || 
@@ -259,8 +255,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                     cnpj == "88888888888888" || 
                     cnpj == "99999999999999") {
                     return false;
-                }
-                    
+                } 
                 // Valida DVs
                 tamanho = cnpj.length - 2
                 numeros = cnpj.substring(0, tamanho);
@@ -278,16 +273,20 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                 soma = 0;
                 pos = tamanho - 7;
                 for (i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2) { pos = 9; }
+                    soma += numeros.charAt(tamanho - i) * pos--;
+                    if (pos < 2) { pos = 9; }
                 }
                 resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
                 if (resultado != digitos.charAt(1)) { return false; }
                     
                 return true;
             }
+        ');
+    }
 
-            function compareDatas(valCartao) { 
+    private function wcsvl_compare_data() {
+        wc_enqueue_js('
+            function wcsvl_compareDatas(valCartao) { 
                 var hoje = new Date();
                 var dadosData = valCartao.split("/");
                 var validade = new Date(dadosData[0] + "/01/" + dadosData[1]);
@@ -298,40 +297,57 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                     return false;
                 }
             }
+        ');
+    }
 
+    private function wcsvl_verifica_cpf_cnpj() {
+        echo $this->wcsvl_valida_cpf();
+        echo $this->wcsvl_valida_cnpj();
+        wc_enqueue_js('
             $(document).ready(function() {
                 $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #DDDCelular, #NrCelular").live("click", function() {
                     var cpfCnpj = $("#CpfCnpjComprador").val();
                     if (cpfCnpj != "") {
                         var cpfCnpj = cpfCnpj.replace(/[^\d]+/g,\'\');
                         if (cpfCnpj.length == 11) {
-                            if (validarCPF(cpfCnpj) == false) {
-                                Modal("erro", "Algo está errado...", "Informe um número de CPF válido", "", "bgModal_interno");
+                            if (wcsvl_validarCPF(cpfCnpj) == false) {
+                                wcsvl_modal("erro", "Algo está errado...", "Informe um número de CPF válido", "", "bgModal_interno");
                                 $("#submit-serveloja-payment-form").hide();
                             }
                         } else if (cpfCnpj.length == 14) {
-                            if (validarCNPJ(cpfCnpj) == false) {
-                                Modal("erro", "Algo está errado...", "Informe um número de CNPJ válido", "", "bgModal_interno");
+                            if (wcsvl_validarCNPJ(cpfCnpj) == false) {
+                                wcsvl_modal("erro", "Algo está errado...", "Informe um número de CNPJ válido", "", "bgModal_interno");
                                 $("#submit-serveloja-payment-form").hide();
                             }
                         } else if (cpfCnpj.length != 11 || cpfCnpj.length != 14) {
-                            Modal("erro", "Algo está errado...", "Informe um número de CPF ou CNPJ válido", "", "bgModal_interno");
+                            wcsvl_modal("erro", "Algo está errado...", "Informe um número de CPF ou CNPJ válido", "", "bgModal_interno");
                             $("#submit-serveloja-payment-form").hide();
                         }
                     }
                 });
+            });
+        ');
+    }
 
-                $(document).ready(function() {
-                    $("#nmTitular, #NrCartao, #CpfCnpjComprador, #CodSeguranca, #DDDCelular, #NrCelular").live("click", function() {
-                        var DataValidade = $("#DataValidade").val();
-                        if (DataValidade != "" && DataValidade != "__/____") {
-                            if (compareDatas(DataValidade) == false) {
-                                Modal("erro", "Algo está errado...", "A data de validade do cartão <b>(" + DataValidade + ")</b>, aparentemente já experiou", "", "bgModal_interno");
-                            }
+    private function wcsvl_validade_cartao() {
+        echo $this->wcsvl_compare_data();
+        wc_enqueue_js('
+            $(document).ready(function() {
+                $("#nmTitular, #NrCartao, #CpfCnpjComprador, #CodSeguranca, #DDDCelular, #NrCelular").live("click", function() {
+                    var DataValidade = $("#DataValidade").val();
+                    if (DataValidade != "" && DataValidade != "__/____") {
+                        if (wcsvl_compareDatas(DataValidade) == false) {
+                            wcsvl_modal("erro", "Algo está errado...", "A data de validade do cartão <b>(" + DataValidade + ")</b>, aparentemente já experiou", "", "bgModal_interno");
                         }
-                    });
+                    }
                 });
+            });
+        ');
+    }
 
+    private function wcsvl_valida_campos() {
+        wc_enqueue_js('
+            $(document).ready(function() {
                 $("#submit-serveloja-payment-form").hide();
                 $("#nmTitular, #NrCartao, #DataValidade, #CodSeguranca, #colunaEsq, #DDDCelular, #NrCelular, #CpfCnpjComprador").live("mousemove", function() {
                     var isChecked = $("input[name=bandeira_cartao]:checked").val();
@@ -342,6 +358,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                         $("#CodSeguranca").val() == "" ||
                         $("#DDDCelular").val() == "" ||
                         $("#NrCelular").val() == "" ||
+                        $("#NrCelular").val() == "_____-____" ||
                         $("#CpfCnpjComprador").val() == ""
                     ) {
                         $("#submit-serveloja-payment-form").hide();
@@ -349,35 +366,33 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                         $("#submit-serveloja-payment-form").show();
                     }
                 });
-
             });
         ');
     }
 
-    private function WCSVL_alert_inicio_validacao() {
+    private function wcsvl_alert_inicio_validacao() {
         wc_enqueue_js('
             $(document).ready(function() {
                 $("#submit-serveloja-payment-form").live("click", function () {
-                    Modal("alerta", "Validando...", "Estamos validando suas informações, aguarde alguns instantes", "", "bgModal_interno");
+                    wcsvl_modal("alerta", "Validando...", "Estamos validando suas informações, aguarde alguns instantes", "", "bgModal_interno");
                 });
             });
         ');
     }
 
-    public function WCSVL_apl_authorization() {
-        $authorization = (WCSVL_Serveloja_Funcoes::WCSVL_aplicacao() == "0") ? "" : WCSVL_Serveloja_Funcoes::WCSVL_aplicacao()[0]->apl_token;
+    public function wcsvl_apl_authorization() {
+        $authorization = (WC_Serveloja_Funcoes::wcsvl_aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::wcsvl_aplicacao()[0]->apl_token;
         return $authorization;
     }
 
-    public function WCSVL_apl_applicatioId() {
-        $applicatioId = (WCSVL_Serveloja_Funcoes::WCSVL_aplicacao() == "0") ? "" : WCSVL_Serveloja_Funcoes::WCSVL_aplicacao()[0]->apl_nome;
+    public function wcsvl_apl_applicatioId() {
+        $applicatioId = (WC_Serveloja_Funcoes::wcsvl_aplicacao() == "0") ? "" : WC_Serveloja_Funcoes::wcsvl_aplicacao()[0]->apl_nome;
         return $applicatioId;
     }
 
-    private function WCSVL_form_payment($order_id) {
+    private function wcsvl_form_payment($order_id) {
         $order = wc_get_order($order_id);
-        if ($this->WCSVL_apl_authorization() != "") {
-            // verifica se existe post
+        if ($this->wcsvl_apl_authorization() != "") {
             $nmTitular = isset($_POST['nmTitular']) ? $_POST['nmTitular'] : '';
             $NrCartao = isset($_POST['NrCartao']) ? $_POST['NrCartao'] : '';
             $DataValidade = isset($_POST['DataValidade']) ? $_POST['DataValidade'] : '';
@@ -389,7 +404,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
             $retorno = '"<p>Todos os campos marcados com <b>(*)</b>, são de preenchimento obrigatório</p>" +
             "<div id=\'colunaEsq\'>" +
                 "<div class=\'tituloInput\' style=\'margin-top: -5px;\'>Selecione um cartão (*)</div>" +
-                "' . $this->lista_cartoes() . '" +
+                "' . $this->wcsvl_lista_cartoes() . '" +
             "</div>" +
             "<div id=\'colunaDir\'>" +
                 "<form method=\'POST\' action=\'\' name=\'dados_pagamento\'>" +
@@ -436,26 +451,28 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         return $retorno;
     }
 
-    private function WCSVL_modal_payment($order_id) {
+    private function wcsvl_modal_payment($order_id) {
         $order = wc_get_order($order_id);
-        echo $this->cpf_cnpj();
-        echo $this->detalhes_cartao($order->get_total());
-        echo $this->mascaras();
-        echo $this->modal();
-        echo $this->validacoes();
-        echo $this->alert_inicio_validacao();
+        echo $this->wcsvl_cpf_cnpj();
+        echo $this->wcsvl_detalhes_cartao($order->get_total());
+        echo $this->wcsvl_mascaras();
+        echo $this->wcsvl_modal();
+        echo $this->wcsvl_verifica_cpf_cnpj();
+        echo $this->wcsvl_validade_cartao();
+        echo $this->wcsvl_valida_campos();
+        echo $this->wcsvl_alert_inicio_validacao();
         wc_enqueue_js('
             $("#bgModal").fadeIn();
-            cpf_cnpj("CpfCnpjComprador");
-            mascaras("DataValidade", "99/9999");
-            mascaras("NrCelular", "99999-9999");
-            mascaras("NrCartao", "9999-9999-9999-9999");
+            wcsvl_cpf_cnpj("CpfCnpjComprador");
+            wcsvl_mascaras("DataValidade", "99/9999");
+            wcsvl_mascaras("NrCelular", "99999-9999");
+            wcsvl_mascaras("NrCartao", "9999-9999-9999-9999");
             var reply = "";
             reply += "<div id=\'formPagamento\' class=\'sombra\'>" +
             "<div id=\'bgModal_interno\'></div>" +
                 "<div id=\'cabecalho_pagamento\'>" +
                     "<div id=\'logo\'><img src=\'' . PASTA_PLUGIN .'assets/images/serveloja.png\' alt=\'serveloja\' /></div>" +
-                    "<div id=\'valor_total\'>R$ " + mascaraValor(' . $order->get_total() . ') + "</div>" +
+                    "<div id=\'valor_total\'>R$ " + wcsvl_mascaraValor(' . $order->get_total() . ') + "</div>" +
                     "<div id=\'cancelar\' title=\'Cancelar e voltar para o carrinho\'>" +
                         "<a href=\'' . esc_url($order->get_cancel_order_url()) . '\'>" +
                             "<img src=\'' . PASTA_PLUGIN .'assets/images/fechar.png\' alt=\'serveloja\' style=\'width:100%;\' />" +
@@ -463,20 +480,26 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                     "</div>" +
                 "</div>" +
                 "<div class=\'clear\'></div>" +
-                ' . $this->form_payment($order_id) . ' +
+                ' . $this->wcsvl_form_payment($order_id) . ' +
             "</div>";
             $("#bgModal").html(reply);
         ');
     }
 
-    public function WCSVL_generate_serveloja_form($order_id) {
+    public function wcsvl_generate_serveloja_form($order_id) {
         $order = wc_get_order($order_id);
-        echo $this->modal_payment($order_id);
+        echo $this->wcsvl_modal_payment($order_id);
         return '<div id="bgModal"></div>';
     }
-    
+
+    private function wcsvl_UrlAtual () {
+        $dominio= $_SERVER['HTTP_HOST'];
+        $url = "http://" . $dominio. $_SERVER['REQUEST_URI'];
+        return $url;
+    }
+
     // processa pagamento
-    public function WCSVL_process_payment($order_id) {
+    public function process_payment($order_id) {
         $order = wc_get_order($order_id);
         return array(
             'result'   => 'success',
@@ -484,14 +507,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         );
     }
 
-    private function WCSVL_UrlAtual () {
-        $dominio= $_SERVER['HTTP_HOST'];
-        $url = "http://" . $dominio. $_SERVER['REQUEST_URI'];
-        return $url;
-    }
-
-    // página de pagamento com modal
-    public function WCSVL_receipt_page($order_id) {
+    public function receipt_page($order_id) {
         global $woocommerce;
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/client.css" rel="stylesheet" />';
         echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/forms.css" rel="stylesheet" />';
@@ -499,7 +515,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
         echo '<script type="text/javascript" src="' . PASTA_PLUGIN . 'assets/scripts/maskedinput.js"></script>';
         $order = wc_get_order( $order_id );
 
-        echo $this->WCSVL_generate_serveloja_form($order_id);
+        echo $this->wcsvl_generate_serveloja_form($order_id);
         
         if (isset($_POST['finalizar'])) {
             $dados = array(
@@ -518,7 +534,7 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
             );
 
             // envia dados via API
-            $resposta = WCSVL_Serveloja_API::WCSVL_metodos_get('Vendas/EfetuarVendaCredito', $dados, $this->WCSVL_apl_authorization(), $this->WCSVL_apl_applicatioId());
+            $resposta = WC_Serveloja_API::wcsvl_metodos_get('Vendas/EfetuarVendaCredito', $dados, $this->wcsvl_apl_authorization(), $this->wcsvl_apl_applicatioId());
             $resultado = json_decode($resposta["body"], true);
 
             if ($resultado['HttpStatusCode'] == 200) {
@@ -531,13 +547,13 @@ class WCSVL_Serveloja_Gateway extends WC_Payment_Gateway {
                 wc_enqueue_js('
                     $(document).ready(function () {
                         $("#formPagamento").hide();
-                        Modal("sucesso", "Sucesso", "Sua compra foi realizada com sucesso. Muito obrigado por utilizar os serviços da <b>Serveloja</b>", "' . get_option('home') . esc_url('/loja') . '", "bgModal");
+                        wcsvl_modal("sucesso", "Sucesso", "Sua compra foi realizada com sucesso. Muito obrigado por utilizar os serviços da <b>Serveloja</b>", "' . get_option('home') . esc_url('/loja') . '", "bgModal");
                     });
                 ');
             } else {
                 wc_enqueue_js('
                     $(document).ready(function () {
-                        Modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resultado['Mensagem'])) . '", "", "bgModal_interno");
+                        wcsvl_modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resultado['Mensagem'])) . '", "", "bgModal_interno");
                     });
                 ');
             }
