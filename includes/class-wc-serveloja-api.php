@@ -16,8 +16,7 @@ if (!defined('ABSPATH')) {
 class WC_Serveloja_API {
 
 	private function wcsvl_servidor() {
-		// return "https://sistemaserveloja.com.br/gtw/webapi/";
-		return "http://desenvolvimento.redeserveloja.com/Novo/WebApi/";
+		return "https://sistemaserveloja.com.br/gtw/webapi/";
 	}
 
 	public function wcsvl_metodos_get($url, $param, $authorization, $applicationId) {

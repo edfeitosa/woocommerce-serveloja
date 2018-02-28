@@ -1,15 +1,9 @@
-<?php function wcsvl_function_cartoes() { ?>
+<?php function wcsvl_function_cartoes() {
 
-    <!-- scripts e estilos -->
-    <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/style.css" rel="stylesheet" />
-    <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/forms.css" rel="stylesheet" />
-    <link type="text/css" href="<?php echo PASTA_PLUGIN; ?>assets/css/tabelas.css" rel="stylesheet" />
-    <script type="text/javascript" src="<?php echo PASTA_PLUGIN; ?>assets/scripts/scripts.js"></script>
+    // cabeçalho
+    WC_Serveloja_Modulos::wcsvl_cabecalho();
 
-    <!-- cabeçalho -->
-    <?php WC_Serveloja_Modulos::wcsvl_cabecalho(); ?>
-
-    <?php $funcoes = new WC_Serveloja_Funcoes;
+    $funcoes = new WC_Serveloja_Funcoes;
     if (isset($_POST["salvar_cartoes"])) {
         echo $funcoes::wcsvl_insert_cartoes($_POST["posicao"], $_POST["car_cod"], $_POST["car_bandeira"], $_POST["car_parcelas"]);
     } ?>
@@ -29,8 +23,6 @@
 
     <form method="post" action="" name="cartoes">
         <?php echo $funcoes::wcsvl_tabela_cartoes(); ?>
-        <div class="clear"></div>
-        <input type="submit" class="submit" name="salvar_cartoes" value="Salvar" name="salvar" />
     </form>
 
     <div class="clear"></div>

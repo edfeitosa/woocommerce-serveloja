@@ -20,7 +20,7 @@ class WC_Serveloja_Modulos {
         $html = '<div id="headerPlugin">' .
             '<div id="logo">' .
                 '<a href="admin.php?page=home">' .
-                    '<img src="' . WP_PLUGIN_URL . '/woocommerce-serveloja/assets/images/serveloja.png" alt="servloja" border="0" />' .
+                    '<img src="' . plugins_url('assets/images/serveloja.png', dirname(__FILE__)) . '" alt="servloja" border="0" />' .
                 '</a>' .
             '</div>' .
         '</div>';
@@ -31,7 +31,7 @@ class WC_Serveloja_Modulos {
         $html = '<div class="barraFerramentas">' .
             '<div class="botao">' .
                 '<a href="admin.php?page=home">' .
-                    '<img src="' . PASTA_PLUGIN . 'assets/images/home.png" alt="serveloja" border="0" />' .
+                    '<img src="' . plugins_url('assets/images/home.png', dirname(__FILE__)) . '" alt="serveloja" border="0" />' .
                 '</a>' .
                 '<br />' .
                 'Página Inicial' .
@@ -40,7 +40,7 @@ class WC_Serveloja_Modulos {
 
             '<div class="botao">' .
                 '<a href="admin.php?page=configuracoes">' .
-                    '<img src="' . PASTA_PLUGIN . 'assets/images/configuracoes.png" alt="configuracoes" title="Configurações" border="0" />' .
+                    '<img src="' . plugins_url('assets/images/configuracoes.png', dirname(__FILE__)) . '" alt="serveloja" border="0" />' .
                 '</a>' .
                 '<br />' .
                 'Configurações' .
@@ -49,7 +49,7 @@ class WC_Serveloja_Modulos {
 
             '<div class="botao">' .
                 '<a href="admin.php?page=cartoes">' .
-                    '<img src="' . PASTA_PLUGIN . 'assets/images/cartoes.png" alt="cartoes" title="Cartões" border="0" />' .
+                    '<img src="' . plugins_url('assets/images/cartoes.png', dirname(__FILE__)) . '" alt="serveloja" border="0" />' .
                 '</a>' .
                 '<br />' .
                 'Cartões' .
@@ -58,7 +58,7 @@ class WC_Serveloja_Modulos {
 
             '<div class="botao">' .
                 '<a href="admin.php?page=wc-settings&tab=checkout&section=serveloja">' .
-                    '<img src="' . PASTA_PLUGIN . 'assets/images/woo.png" alt="woocommerce" title="Woocommerce" border="0" />' .
+                    '<img src="' . plugins_url('assets/images/woo.png', dirname(__FILE__)) . '" alt="serveloja" border="0" />' .
                 '</a>' .
                 '<br />' .
                 'Wocommerce' .

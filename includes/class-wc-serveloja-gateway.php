@@ -63,7 +63,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 var reply = "";
                 reply += "<div id=\'modal\' class=\'modal modal_" + tipo +  " sombra\'>" +
                     "<div class=\'cabecalho cabecalho_" + tipo +  "\'>" + titulo + "</div>" +
-                    "<div id=\'icone\'><img src=\'' . PASTA_PLUGIN .'assets/images/" + tipo + ".png\' alt=\'icone\' /></div>" +
+                    "<div id=\'icone\'><img src=\'' . plugins_url( 'assets/images/" + tipo + ".png', plugin_dir_path( __FILE__ )) . '\' alt=\'icone\' /></div>" +
                     "<div class=\'resposta\'>" + mensagem + "</div>";
                 if (tipo == "duvida") {
                     reply += "<div class=\'ok\' id=\'cancela\'>Não</div>" +
@@ -152,7 +152,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                         var valor = ' . $total . ';
                         var qtd = isChecked.split("-");
                         var parcela = valor / qtd[0];
-                        var imagem = "<img class=\'img_detalhes\' src=\'' . PASTA_PLUGIN .'assets/images/" + qtd[1].toLowerCase() + ".png\' alt=\'" + qtd[1].toLowerCase() + "\' />";
+                        var imagem = "<img class=\'img_detalhes\' src=\'' . plugins_url( 'assets/images/" + qtd[1].toLowerCase() + ".png', plugin_dir_path( __FILE__ )) . '\' alt=\'" + qtd[1].toLowerCase() + "\' />";
                         var select = "<div class=\'dir_detalhes\'>";
                             select += "<div class=\'tituloInput\' style=\'margin-top:0px;\'>Selecione a quantidade de parcelas</div>";
                             select += "<select class=\'select input_maior select_sborda coluna100\' id=\'QtParcela\' name=\'QtParcela\'>";
@@ -188,7 +188,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 $lista .= "<table cellspacing='0' cellpadding='0' class='tabela'>";
                     foreach ($cartoes_banco as $row) {
                         $lista .= "<tr>" .
-                            "<td class='celulabody' style='width: 20%;'><img class='img_tabela_client' src='" . PASTA_PLUGIN . "assets/images/" . strtolower($row->car_bandeira) . ".png' title='" . ucfirst(strtolower($row->car_bandeira)) . "' alt='" . strtolower($row->car_bandeira) . "' /></td>" .
+                            "<td class='celulabody' style='width: 20%;'><img class='img_tabela_client' src='" . plugins_url("assets/images/" . strtolower($row->car_bandeira) . ".png", plugin_dir_path( __FILE__ )) . "' title='" . ucfirst(strtolower($row->car_bandeira)) . "' alt='" . strtolower($row->car_bandeira) . "' /></td>" .
                             "<td class='celulabody' style='width: 60%;'>" . ucfirst(strtolower($row->car_bandeira)) . "</td>" .
                             "<td class='celulabody celulacentralizar' style='width: 20%;'><input id='" . strtolower($row->car_bandeira) . "' type='radio' name='bandeira_cartao' value='" . strtolower($row->car_parcelas) . "-" . strtolower($row->car_cod) . "' /></td>" .
                         "</tr>";
@@ -471,11 +471,11 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             reply += "<div id=\'formPagamento\' class=\'sombra\'>" +
             "<div id=\'bgModal_interno\'></div>" +
                 "<div id=\'cabecalho_pagamento\'>" +
-                    "<div id=\'logo\'><img src=\'' . PASTA_PLUGIN .'assets/images/serveloja.png\' alt=\'serveloja\' /></div>" +
+                    "<div id=\'logo\'><img src=\'' . plugins_url( 'assets/images/serveloja.png', plugin_dir_path( __FILE__ )) . '\' alt=\'serveloja\' /></div>" +
                     "<div id=\'valor_total\'>R$ " + wcsvl_mascaraValor(' . $order->get_total() . ') + "</div>" +
                     "<div id=\'cancelar\' title=\'Cancelar e voltar para o carrinho\'>" +
                         "<a href=\'' . esc_url($order->get_cancel_order_url()) . '\'>" +
-                            "<img src=\'' . PASTA_PLUGIN .'assets/images/fechar.png\' alt=\'serveloja\' style=\'width:100%;\' />" +
+                            "<img src=\'' . plugins_url( 'assets/images/fechar.png', plugin_dir_path( __FILE__ )) . '\' alt=\'serveloja\' style=\'width:100%;\' />" +
                         "</a>" +
                     "</div>" +
                 "</div>" +
@@ -492,12 +492,6 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         return '<div id="bgModal"></div>';
     }
 
-    private function wcsvl_UrlAtual () {
-        $dominio= $_SERVER['HTTP_HOST'];
-        $url = "http://" . $dominio. $_SERVER['REQUEST_URI'];
-        return $url;
-    }
-
     // processa pagamento
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
@@ -509,10 +503,6 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     public function receipt_page($order_id) {
         global $woocommerce;
-        echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/client.css" rel="stylesheet" />';
-        echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/forms.css" rel="stylesheet" />';
-        echo '<link type="text/css" href="' . PASTA_PLUGIN . 'assets/css/tabela.css" rel="stylesheet" />';
-        echo '<script type="text/javascript" src="' . PASTA_PLUGIN . 'assets/scripts/maskedinput.js"></script>';
         $order = wc_get_order( $order_id );
 
         echo $this->wcsvl_generate_serveloja_form($order_id);
@@ -534,7 +524,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             );
 
             // envia dados via API
-            $resposta = WC_Serveloja_API::wcsvl_metodos_get('Vendas/EfetuarVendaCredito', $dados, $this->wcsvl_apl_authorization(), $this->wcsvl_apl_applicatioId());
+            $resposta = WC_Serveloja_API::wcsvl_metodos_post('Vendas/EfetuarVendaCredito', $dados, $this->wcsvl_apl_authorization(), $this->wcsvl_apl_applicatioId());
             $resultado = json_decode($resposta["body"], true);
 
             if ($resultado['HttpStatusCode'] == 200) {

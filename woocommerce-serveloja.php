@@ -25,14 +25,17 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     
                     $this->wcsvl_includes();
 
+                    // admin
+                    add_action('admin_enqueue_scripts', array(WC_Serveloja_Styles, 'wcsvl_styles_serveloja_admin'));
+
+                    // tema
+                    add_action('wp_enqueue_scripts', array(WC_Serveloja_Styles, 'wcsvl_styles_serveloja_gateway'));
+
                     add_filter('woocommerce_payment_gateways', array($this, 'wcsvl_add_gateway'));
                     add_filter('plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'wcsvl_plugin_action_links'));
-                
-                    // define diretório do plugin
-                    define('PASTA_PLUGIN', WP_PLUGIN_URL.'/woocommerce-serveloja/');
 
                     // define o arquivo de desisntalação e executa funções
-                    define('WP_UNINSTALL_PLUGIN', PASTA_PLUGIN.'uninstall.php');
+                    define('WP_UNINSTALL_PLUGIN', plugins_url('uninstall.php', __FILE__));
 
                     // cria tabelas no banco
                     register_activation_hook(__FILE__, WC_Serveloja::wcsvl_create_db_table());
@@ -45,7 +48,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
 
             public static function wcsvl_get_templates_path() {
-                return plugin_dir_path( __FILE__ ) . 'templates/';
+                return plugin_dir_path(__FILE__) . 'templates/';
             }
 
             public static function wcsvl_get_instance() {
@@ -56,7 +59,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
             }
             
             // adiciona link na página de edição de plugins
-            public function wcsvl_plugin_action_links( $links ) {
+            public function wcsvl_plugin_action_links($links) {
                 $plugin_links   = array();
                 $plugin_links[] = '<a href="' . esc_url(admin_url('admin.php?page=wc-settings&tab=checkout&section=serveloja')) . '">' . __('Woocommerce', 'woocommerce-serveloja') . '</a>';
                 $plugin_links[] = '<a href="' . esc_url(admin_url('admin.php?page=home')) . '">Configurações</a>';
@@ -68,6 +71,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-funcoes.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-api.php';
                 include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-modulos.php';
+                include_once dirname( __FILE__ ) . '/includes/class-wc-serveloja-styles.php';
                 include_once dirname( __FILE__ ) . '/templates/configuracoes.php';
                 include_once dirname( __FILE__ ) . '/templates/cartoes.php';
                 include_once dirname( __FILE__ ) . '/templates/home.php';
