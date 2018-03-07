@@ -14,12 +14,30 @@
 
   // post
   if (isset($_POST["salvar_config"])) {
-    $apl_nome = $_POST["apl_nome"];
-    $apl_token_teste = $_POST["apl_token_teste"];
-    $apl_token = $_POST["apl_token"];
-    $apl_prefixo = $_POST["apl_prefixo"];
-    $apl_email = $_POST["apl_email"];
-    echo WC_Serveloja_Funcoes::wcsvl_save_configuracoes($_POST["apl_nome"], $_POST["apl_token_teste"], $_POST["apl_token"], $_POST["apl_prefixo"], $_POST["apl_email"], $_POST["apl_id"]);
+
+    // tratamento
+    $apl_nome        = sanitize_text_field($_POST["apl_nome"]);
+    $apl_token_teste = sanitize_text_field($_POST["apl_token_teste"]);
+    $apl_token       = sanitize_text_field($_POST["apl_token"]);
+    $apl_prefixo     = sanitize_text_field($_POST["apl_prefixo"]);
+    $apl_email       = sanitize_email($_POST["apl_email"]);
+    $apl_id          = sanitize_key(intval($_POST["apl_id"]));
+
+    $salvar = WC_Serveloja_Funcoes::wcsvl_save_configuracoes(
+      $apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id
+    );
+
+    // retorno
+    $show = "<div class='" . $salvar[0] . "'>";
+    $show .= "<h3>" . $salvar[1] . "</h3>";
+    $i = 0;
+    foreach($salvar as $item) {
+      if ($i > 1) { $show .= $item; }
+      $i++;
+    }
+    $show .= "</div>";
+    echo $show;
+
     $dados = WC_Serveloja_Funcoes::wcsvl_aplicacao();
   } ?>
 

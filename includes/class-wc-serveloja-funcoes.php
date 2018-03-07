@@ -71,22 +71,40 @@ class WC_Serveloja_Funcoes {
         }
     }
 
-    // validação de e-mail
-    private function wcsvl_valida_email($email) {
-        if ($email == '') {
-            return true;
-        } else {
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return true;
-            } else {
-                return false; 
-            }
-        }
-    }
-
     // salva dados aplicação
     public function wcsvl_save_configuracoes($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
-        if ($apl_nome == "" || $apl_token == "") {
+        global $reg_errors;
+        $reg_errors = new WP_Error;
+
+        // valida campos
+        if (empty($apl_nome)) {
+            $reg_errors->add("nome-vazio", "Você precisa informar o <b>Nome da Aplicação</b> da aplicação antes de prosseguir");
+        }
+        if (empty($apl_token)) {
+            $reg_errors->add("token-vazio", "Você precisa informar o <b>Token da Aplicação</b> da aplicação antes de prosseguir");
+        }
+        if (!is_email($apl_email)) {
+            $reg_errors->add("email-invalido", "O e-mail informado não é válido");
+        }
+
+        // retorno
+        $retorno = array();
+        if (is_wp_error($reg_errors)) {
+            if (count($reg_errors->get_error_messages()) > 0) {
+                array_push($retorno, "erro");
+                array_push($retorno, "Antes de prosseguir, você precisa resolver os seguintes problemas:");
+                for ($i = 0; $i < count($reg_errors->get_error_messages()); $i++) {
+                    array_push($retorno, "<b>" . ($i + 1) . ")</b> " . $reg_errors->get_error_messages()[$i] . "<br />");
+                }
+            } else {
+                array_push($retorno, "sucesso");
+                array_push($retorno, "Não ocorreram problemas");
+                array_push($retorno, "Informações adicionadas com sucesso");
+            }
+        }
+        return $retorno;
+        
+        /* if ($apl_nome == "" || $apl_token == "") {
             return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Os campos marcados com (*) devem ser preencidos");
         } else if (WC_Serveloja_Funcoes::wcsvl_valida_email($apl_email) == false) {
             return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Informe um e-mail válido para continuar");
@@ -96,7 +114,7 @@ class WC_Serveloja_Funcoes {
             } else {
                 return WC_Serveloja_Funcoes::wcsvl_update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
             }
-        }
+        } */
     }
 
     // lista dados da aplicação

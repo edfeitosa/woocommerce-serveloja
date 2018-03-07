@@ -187,9 +187,14 @@ input[type='file'] {
     position: relative;
     border-radius: 3px;
     color: #c6b149;
-    font-weight: bold;
     margin: 20px 0px 20px 0px;
-    width: 95.5%;
+    width: 96%;
+}
+
+.alerta h3 {
+    color: #c6b149;
+    padding: 0px;
+    margin: 0px 0px 8px 0px;
 }
 
 .sucesso {
@@ -199,9 +204,14 @@ input[type='file'] {
     position: relative;
     border-radius: 3px;
     color: #017804;
-    font-weight: bold;
     margin: 20px 0px 20px 0px;
-    width: 95.5%;
+    width: 96%;
+}
+
+.sucesso h3 {
+    color: #017804;
+    padding: 0px;
+    margin: 0px 0px 8px 0px;
 }
 
 .erro {
@@ -211,9 +221,14 @@ input[type='file'] {
     position: relative;
     border-radius: 3px;
     color: #f00;
-    font-weight: bold;
     margin: 20px 0px 20px 0px;
-    width: 95.5%;
+    width: 96%;
+}
+
+.erro h3 {
+    color: #f00;
+    padding: 0px;
+    margin: 0px 0px 8px 0px;
 }
 
 .checkbox {
