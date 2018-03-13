@@ -21,22 +21,16 @@
     $apl_token       = sanitize_text_field($_POST["apl_token"]);
     $apl_prefixo     = sanitize_text_field($_POST["apl_prefixo"]);
     $apl_email       = sanitize_email($_POST["apl_email"]);
-    $apl_id          = sanitize_key(intval($_POST["apl_id"]));
+    $apl_id          = intval($_POST["apl_id"]);
 
     $salvar = WC_Serveloja_Funcoes::wcsvl_save_configuracoes(
       $apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id
     );
 
     // retorno
-    $show = "<div class='" . $salvar[0] . "'>";
-    $show .= "<h3>" . $salvar[1] . "</h3>";
-    $i = 0;
-    foreach($salvar as $item) {
-      if ($i > 1) { $show .= $item; }
-      $i++;
-    }
-    $show .= "</div>";
-    echo $show;
+    echo "<div class='" . $salvar["class"] . "'>" .
+      "<h3>" . $salvar["titulo"] . "</h3>" . $salvar["mensagem"] .
+    "</div>";
 
     $dados = WC_Serveloja_Funcoes::wcsvl_aplicacao();
   } ?>
@@ -70,7 +64,7 @@
     <div class="tituloInput">Prefixo das transações</div>
     <input type="text" class="input" name="apl_prefixo" value="<?php echo $apl_prefixo; ?>" />
     <br />
-    <div class="tituloInput">Informe um e-mail para receber notificações sobre compras realizadas em seu site/loja</div>
+    <div class="tituloInput">Informe um e-mail para receber notificações sobre compras realizadas em seu site/loja (*)</div>
     <input type="text" class="input" name="apl_email" value="<?php echo $apl_email; ?>" />
     <br />
     <input type="hidden" name="apl_id" value="<?php echo $apl_id; ?>" />

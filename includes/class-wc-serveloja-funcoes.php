@@ -26,8 +26,8 @@ class WC_Serveloja_Funcoes {
     }
 
     // exibe a mensagem e classe conforme setado
-    private function wcsvl_div_resposta($id, $class, $mensagem) {
-        return '<div id="' . $id . '" class="' . $class . '">' . $mensagem . '</div>' . WC_Serveloja_Funcoes::wcsvl_script($id);
+    private function wcsvl_div_resposta($class, $titulo, $mensagem) {
+        return array("class" => $class, "titulo" => $titulo, "mensagem" => $mensagem);
     }
 
     // ações no banco para aplicação
@@ -44,9 +44,9 @@ class WC_Serveloja_Funcoes {
             array('%s', '%s', '%s', '%s', '%s')
         );
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
         } else {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "sucesso", "Os dados foram adicionados com sucesso");
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("sucesso", "Não houve falhas", "Os dados foram adicionados com sucesso");
         }
     }
 
@@ -65,9 +65,9 @@ class WC_Serveloja_Funcoes {
             array('%s')
         );
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Ocorreram falhas", "Ocorreu um erro: " . $wpdb->last_error);
         } else {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "sucesso", "Os dados foram modificados com sucesso");
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("sucesso", "Não houve falhas", "Os dados foram modificados com sucesso");
         }
     }
 
@@ -87,34 +87,25 @@ class WC_Serveloja_Funcoes {
             $reg_errors->add("email-invalido", "O e-mail informado não é válido");
         }
 
-        // retorno
+        // processamento e retorno
         $retorno = array();
         if (is_wp_error($reg_errors)) {
             if (count($reg_errors->get_error_messages()) > 0) {
-                array_push($retorno, "erro");
-                array_push($retorno, "Antes de prosseguir, você precisa resolver os seguintes problemas:");
+                $class = "erro";
+                $titulo = "Antes de prosseguir, você precisa resolver os seguintes problemas:";
+                $mensagem = "";
                 for ($i = 0; $i < count($reg_errors->get_error_messages()); $i++) {
-                    array_push($retorno, "<b>" . ($i + 1) . ")</b> " . $reg_errors->get_error_messages()[$i] . "<br />");
+                    $mensagem .= "<b>" . ($i + 1) . ")</b> " . $reg_errors->get_error_messages()[$i] . "<br />";
                 }
+                return array("class" => $class, "titulo" => $titulo, "mensagem" => $mensagem);
             } else {
-                array_push($retorno, "sucesso");
-                array_push($retorno, "Não ocorreram problemas");
-                array_push($retorno, "Informações adicionadas com sucesso");
+                if ($apl_id == 0) {
+                    return WC_Serveloja_Funcoes::wcsvl_insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
+                } else {
+                    return WC_Serveloja_Funcoes::wcsvl_update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
+                }
             }
         }
-        return $retorno;
-        
-        /* if ($apl_nome == "" || $apl_token == "") {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Os campos marcados com (*) devem ser preencidos");
-        } else if (WC_Serveloja_Funcoes::wcsvl_valida_email($apl_email) == false) {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Informe um e-mail válido para continuar");
-        } else {
-            if ($apl_id == "0") {
-                return WC_Serveloja_Funcoes::wcsvl_insert_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email);
-            } else {
-                return WC_Serveloja_Funcoes::wcsvl_update_aplicacao($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id);
-            }
-        } */
     }
 
     // lista dados da aplicação
@@ -122,7 +113,7 @@ class WC_Serveloja_Funcoes {
         global $wpdb;
         $rows = $wpdb->get_results("SELECT apl_id, apl_nome, apl_token_teste, apl_token, apl_prefixo, apl_email FROM " . $wpdb->prefix . "aplicacao ORDER BY apl_id DESC LIMIT 1");
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
         } else {
             if (count($rows) == 0) {
                 return "0";
@@ -154,7 +145,7 @@ class WC_Serveloja_Funcoes {
             );
         }
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
         } else {
             header("location: " . esc_url(admin_url('admin.php?page=cartoes')));
         }
@@ -164,7 +155,7 @@ class WC_Serveloja_Funcoes {
         global $wpdb;
         $rows = $wpdb->get_results("SELECT car_cod, car_bandeira, car_parcelas FROM " . $wpdb->prefix . "cartoes");
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
         } else {
             return $rows;
         }
@@ -180,7 +171,7 @@ class WC_Serveloja_Funcoes {
         global $wpdb;
         $rows = $wpdb->get_results("SELECT COUNT(apl_id) AS total FROM " . $wpdb->prefix . "aplicacao");
         if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::div_resposta("fecha_mensagem", "erro", "Ocorreu um erro: " . $wpdb->last_error);
+            return WC_Serveloja_Funcoes::div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
         } else {
             foreach ($rows as $row) {
                 return (int)$row->total;
@@ -240,9 +231,9 @@ class WC_Serveloja_Funcoes {
                     $checado = '';
                 }
                 $retorno .= '<tr>' .
-                '<td class="celulabody ' . $css . '">' . 
+                '<td class="celulabody ' . $css . '">' .
                 '<img class="img_tabela" src="' . plugins_url('assets/images/' . strtolower($cartoes["Container"][$i]["NomeBandeira"]) . '.png', dirname(__FILE__)) . '" title="' . $cartoes["Container"][$i]["NomeBandeira"] .'" alt="' . strtolower($cartoes["Container"][$i]["NomeBandeira"]) . '" />' .
-                $cartoes["Container"][$i]["NomeBandeira"] . 
+                $cartoes["Container"][$i]["NomeBandeira"] .
                 '</td>' .
                 '<td class="celulabody celulacentralizar ' . $css . '"><input ' . $checado . ' type="checkbox" name="posicao[]" value="' . $i .'" /> Sim' .
                 '<input type="hidden" name="car_bandeira[]" value="' . $cartoes["Container"][$i]["NomeBandeira"] . '" />' .
@@ -260,6 +251,4 @@ class WC_Serveloja_Funcoes {
         return $retorno;
     }
 
-}
-
-?>
+} ?>
