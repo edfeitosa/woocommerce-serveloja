@@ -5,11 +5,13 @@
 
     $funcoes = new WC_Serveloja_Funcoes;
     if (isset($_POST["salvar_cartoes"])) {
+        // campos 'sanatizados' antes da inserção no banco
         $salvar = $funcoes::wcsvl_insert_cartoes(
-            intval($_POST["posicao"]),
-            sanitize_text_field($_POST["car_cod"]),
-            sanitize_text_field($_POST["car_bandeira"]),
-            sanitize_text_field($_POST["car_parcelas"])
+            $funcoes::sanitize_text_or_array($_POST["posicao"]),
+            $funcoes::sanitize_text_or_array($_POST["car_cod"]),
+            $funcoes::sanitize_text_or_array($_POST["car_bandeira"]),
+            $funcoes::sanitize_text_or_array($_POST["car_parcelas"]),
+            $_POST["_nonce_cartoes"]
         );
 
         if (!is_null($salvar["class"])) {
@@ -35,6 +37,7 @@
     <p><i>Selecione os cartões que você utilizará para receber pagamentos em sua loja virtual. Após concluir, clique no botão <b>"Salvar"</b>.</i></p>
 
     <form method="post" action="" name="cartoes">
+        <input type="hidden" name="_nonce_cartoes" value="<?php echo wp_create_nonce('cartoes_user'); ?>" />
         <?php echo $funcoes::wcsvl_tabela_cartoes(); ?>
     </form>
 

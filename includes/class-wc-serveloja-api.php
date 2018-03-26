@@ -58,5 +58,5 @@ class WC_Serveloja_API {
 			return $response;
 		}
 	}
-    
+
 } ?>

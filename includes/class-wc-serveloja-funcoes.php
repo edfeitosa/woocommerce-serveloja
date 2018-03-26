@@ -72,7 +72,7 @@ class WC_Serveloja_Funcoes {
     }
 
     // salva dados aplicação
-    public function wcsvl_save_configuracoes($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id) {
+    public function wcsvl_save_configuracoes($apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id, $nonce) {
         global $reg_errors;
         $reg_errors = new WP_Error;
 
@@ -85,6 +85,9 @@ class WC_Serveloja_Funcoes {
         }
         if (!is_email($apl_email)) {
             $reg_errors->add("email-invalido", "O e-mail informado não é válido");
+        }
+        if (!wp_verify_nonce($nonce, "config_user")) {
+            $reg_errors->add("cod-invalido", "O código de verificação é inválido. Operação não concluída");
         }
 
         // processamento e retorno
@@ -130,24 +133,28 @@ class WC_Serveloja_Funcoes {
         return WC_Serveloja_API::wcsvl_metodos_get('Cartao/ObterBandeirasValidas', "", $authorization, $applicatioId);
     }
 
-    public function wcsvl_insert_cartoes($posicao, $car_cod, $car_bandeira, $car_parcelas) {
-        global $wpdb;
-        $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . "cartoes");
-        for ($i = 0; $i < count($posicao); $i++) {
-            $pos = $posicao[$i];
-            $wpdb->insert(
-                $wpdb->prefix . "cartoes",
-                array('car_cod' => $car_cod[$pos],
-                    'car_bandeira' => $car_bandeira[$pos],
-                    'car_parcelas' => $car_parcelas[$pos]
-                ),
-                array('%s', '%s', '%s')
-            );
-        }
-        if ($wpdb->last_error) {
-            return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
+    public function wcsvl_insert_cartoes($posicao, $car_cod, $car_bandeira, $car_parcelas, $nonce) {
+        if (wp_verify_nonce($nonce, 'cartoes_user')) {
+            global $wpdb;
+            $wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . "cartoes");
+            for ($i = 0; $i < count($posicao); $i++) {
+                $pos = $posicao[$i];
+                $wpdb->insert(
+                    $wpdb->prefix . "cartoes",
+                    array('car_cod' => $car_cod[$pos],
+                        'car_bandeira' => $car_bandeira[$pos],
+                        'car_parcelas' => $car_parcelas[$pos]
+                    ),
+                    array('%s', '%s', '%s')
+                );
+            }
+            if ($wpdb->last_error) {
+                return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Ocorreram falhas", "Erro: " . $wpdb->last_error);
+            } else {
+                header("location: " . esc_url(admin_url('admin.php?page=cartoes')));
+            }
         } else {
-            header("location: " . esc_url(admin_url('admin.php?page=cartoes')));
+            return WC_Serveloja_Funcoes::wcsvl_div_resposta("erro", "Não verificado", "Ocorreu um erro na validação da ação (NONCE WP). O sistema não pode continuar");
         }
     }
 
@@ -249,6 +256,22 @@ class WC_Serveloja_Funcoes {
             '<input type="submit" class="submit" name="salvar_cartoes" value="Salvar" name="salvar" />';
         }
         return $retorno;
+    }
+
+    // limpeza de dados de array
+    function sanitize_text_or_array($dados) {
+        if (is_string($dados)){
+            $dados = sanitize_text_field($dados);
+        } else if (is_array($dados)) {
+            foreach ($dados as $key => &$value) {
+                if (is_array($value)) {
+                    $value = sanitize_text_or_array_field($value);
+                } else {
+                    $value = sanitize_text_field($value);
+                }
+            }
+        }
+        return $dados;
     }
 
 } ?>

@@ -1,7 +1,9 @@
 <?php function wcsvl_function_configuracoes() {
 
+  $funcoes = new WC_Serveloja_Funcoes;
+
   // verifica se já existem informações sobre a aplicação
-  $dados = WC_Serveloja_Funcoes::wcsvl_aplicacao();
+  $dados = $funcoes::wcsvl_aplicacao();
   $apl_id = ($dados == "0") ? "0" : $dados[0]->apl_id;
   $apl_nome = ($dados == "0") ? "" : $dados[0]->apl_nome;
   $apl_token_teste = ($dados == "0") ? "" : $dados[0]->apl_token_teste;
@@ -16,15 +18,16 @@
   if (isset($_POST["salvar_config"])) {
 
     // tratamento
-    $apl_nome        = sanitize_text_field($_POST["apl_nome"]);
-    $apl_token_teste = sanitize_text_field($_POST["apl_token_teste"]);
-    $apl_token       = sanitize_text_field($_POST["apl_token"]);
-    $apl_prefixo     = sanitize_text_field($_POST["apl_prefixo"]);
-    $apl_email       = sanitize_email($_POST["apl_email"]);
-    $apl_id          = intval($_POST["apl_id"]);
+    $apl_nome        = $funcoes::sanitize_text_or_array($_POST["apl_nome"]);
+    $apl_token_teste = $funcoes::sanitize_text_or_array($_POST["apl_token_teste"]);
+    $apl_token       = $funcoes::sanitize_text_or_array($_POST["apl_token"]);
+    $apl_prefixo     = $funcoes::sanitize_text_or_array($_POST["apl_prefixo"]);
+    $apl_email       = $funcoes::sanitize_text_or_array($_POST["apl_email"]);
+    $apl_id          = intval($funcoes::sanitize_text_or_array($_POST["apl_id"]));
+    $nonce           = $_POST["_nonce_config"];
 
     $salvar = WC_Serveloja_Funcoes::wcsvl_save_configuracoes(
-      $apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id
+      $apl_nome, $apl_token_teste, $apl_token, $apl_prefixo, $apl_email, $apl_id, $nonce
     );
 
     // retorno
@@ -50,8 +53,9 @@
   <div class="clear"></div>
 
   <p><i>Todos os campos marcados com <b>(*)</b> são de preenchimento obrigatório.</i></p>
-    
+
   <form name="configuracoes" method="post" action="">
+    <input type="hidden" name="_nonce_config" value="<?php echo wp_create_nonce('config_user'); ?>" />
     <div class="tituloInput">Nome da Aplicação (*)</div>
     <input type="text" class="input" name="apl_nome" value="<?php echo $apl_nome; ?>" maxlength="30" />
     <br />

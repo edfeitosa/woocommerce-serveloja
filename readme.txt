@@ -1,4 +1,4 @@
-?=== WooCommerce Serveloja ===
+=== WooCommerce Serveloja ===
 Contributors: TiServeloja
 Donate link: 
 Tags: woocommerce, serveloja, payment
@@ -12,18 +12,13 @@ Adds Serveloja gateway to the WooCommerce plugin
 
 == Description ==
 
-O Woocommerce Serveloja, foi desenvolvido mediante especificações técnicas fornecidas pelo WordPress.org para criação de plug-ins, bem como, documentação oficial da Serveloja, a qual é utilizada em suas API’s para transações comerciais e fornece a proprietários de e-commerces (lojas virtuais), uma forma rápida de finalizar suas vendas, utilizando cartões de créditos.
+O Woocommerce Serveloja, fornece a proprietários de e-commerces (lojas virtuais), uma forma rápida de finalizar suas vendas, utilizando cartões de créditos.
 
-== Instalação do Plugin ==
+== Installation ==
 
-* Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress.
-* Ative o plugin.
-
-== Requerimentos ==
+Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress. Após realizar alguma detas ações, ative o plugin.
 
 É necessário ter conta na [Serveloja](http://www.serveloja.com.br) e ter instalado o [WooCommerce](http://wordpress.org/plugins/woocommerce/).
-
-== Configurações do Plugin ==
 
 Com o plugin instalado acesse o admin do WordPress e entre em "WooCommerce" > "Configurações" > "Finalizar compra" > "Serveloja". Habilite a opção "Utilizar WooCommerce Serveloja para receber pagamentos".
 

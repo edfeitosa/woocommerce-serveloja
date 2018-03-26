@@ -74,7 +74,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 reply += "</div>";
                 return reply;
             }
-            
+
             function wcsvl_modal(tipo, titulo, mensagem, url, bg) {
                 $("#" + bg).fadeIn();
                 setTimeout(function () {
@@ -208,29 +208,29 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 Soma = 0;
                 cpf = cpf.replace(/[^\d]+/g,\'\');
                 if (cpf == \'\') { return false; }
-                if (cpf == "00000000000" || 
-                    cpf == "11111111111" || 
-                    cpf == "22222222222" || 
-                    cpf == "33333333333" || 
-                    cpf == "44444444444" || 
-                    cpf == "55555555555" || 
-                    cpf == "66666666666" || 
-                    cpf == "77777777777" || 
-                    cpf == "88888888888" || 
+                if (cpf == "00000000000" ||
+                    cpf == "11111111111" ||
+                    cpf == "22222222222" ||
+                    cpf == "33333333333" ||
+                    cpf == "44444444444" ||
+                    cpf == "55555555555" ||
+                    cpf == "66666666666" ||
+                    cpf == "77777777777" ||
+                    cpf == "88888888888" ||
                     cpf == "99999999999") {
                     return false;
                 }
-                
+
                 for (i=1; i<=9; i++) Soma = Soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
                 Resto = (Soma * 10) % 11;
-                
+
                 if ((Resto == 10) || (Resto == 11))  Resto = 0;
                 if (Resto != parseInt(cpf.substring(9, 10)) ) return false;
-                
+
                 Soma = 0;
                 for (i = 1; i <= 10; i++) Soma = Soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
                 Resto = (Soma * 10) % 11;
-                
+
                 if ((Resto == 10) || (Resto == 11))  Resto = 0;
                 if (Resto != parseInt(cpf.substring(10, 11) ) ) return false;
                 return true;
@@ -244,18 +244,18 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 cnpj = cnpj.replace(/[^\d]+/g,\'\');
                 if (cnpj == \'\') { return false; }
                 if (cnpj.length != 14) { return false; }
-                if (cnpj == "00000000000000" || 
-                    cnpj == "11111111111111" || 
-                    cnpj == "22222222222222" || 
-                    cnpj == "33333333333333" || 
-                    cnpj == "44444444444444" || 
-                    cnpj == "55555555555555" || 
-                    cnpj == "66666666666666" || 
-                    cnpj == "77777777777777" || 
-                    cnpj == "88888888888888" || 
+                if (cnpj == "00000000000000" ||
+                    cnpj == "11111111111111" ||
+                    cnpj == "22222222222222" ||
+                    cnpj == "33333333333333" ||
+                    cnpj == "44444444444444" ||
+                    cnpj == "55555555555555" ||
+                    cnpj == "66666666666666" ||
+                    cnpj == "77777777777777" ||
+                    cnpj == "88888888888888" ||
                     cnpj == "99999999999999") {
                     return false;
-                } 
+                }
                 // Valida DVs
                 tamanho = cnpj.length - 2
                 numeros = cnpj.substring(0, tamanho);
@@ -278,7 +278,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
                 }
                 resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
                 if (resultado != digitos.charAt(1)) { return false; }
-                    
+
                 return true;
             }
         ');
@@ -286,7 +286,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
 
     private function wcsvl_compare_data() {
         wc_enqueue_js('
-            function wcsvl_compareDatas(valCartao) { 
+            function wcsvl_compareDatas(valCartao) {
                 var hoje = new Date();
                 var dadosData = valCartao.split("/");
                 var validade = new Date(dadosData[0] + "/01/" + dadosData[1]);
@@ -393,13 +393,13 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
     private function wcsvl_form_payment($order_id) {
         $order = wc_get_order($order_id);
         if ($this->wcsvl_apl_authorization() != "") {
-            $nmTitular = isset($_POST['nmTitular']) ? $_POST['nmTitular'] : '';
-            $NrCartao = isset($_POST['NrCartao']) ? $_POST['NrCartao'] : '';
-            $DataValidade = isset($_POST['DataValidade']) ? $_POST['DataValidade'] : '';
-            $CpfCnpjComprador = isset($_POST['CpfCnpjComprador']) ? $_POST['CpfCnpjComprador'] : '';
-            $CodSeguranca = isset($_POST['CodSeguranca']) ? $_POST['CodSeguranca'] : '';
-            $DDDCelular = isset($_POST['DDDCelular']) ? $_POST['DDDCelular'] : '';
-            $NrCelular = isset($_POST['NrCelular']) ? $_POST['NrCelular'] : '';
+            $nmTitular = isset($_POST['nmTitular']) ? sanitize_text_field($_POST['nmTitular']) : '';
+            $NrCartao = isset($_POST['NrCartao']) ? sanitize_text_field($_POST['NrCartao']) : '';
+            $DataValidade = isset($_POST['DataValidade']) ? sanitize_text_field($_POST['DataValidade']) : '';
+            $CpfCnpjComprador = isset($_POST['CpfCnpjComprador']) ? sanitize_text_field($_POST['CpfCnpjComprador']) : '';
+            $CodSeguranca = isset($_POST['CodSeguranca']) ? sanitize_text_field($_POST['CodSeguranca']) : '';
+            $DDDCelular = isset($_POST['DDDCelular']) ? sanitize_text_field($_POST['DDDCelular']) : '';
+            $NrCelular = isset($_POST['NrCelular']) ? sanitize_text_field($_POST['NrCelular']) : '';
             // form
             $retorno = '"<p>Todos os campos marcados com <b>(*)</b>, são de preenchimento obrigatório</p>" +
             "<div id=\'colunaEsq\'>" +
@@ -408,6 +408,7 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
             "</div>" +
             "<div id=\'colunaDir\'>" +
                 "<form method=\'POST\' action=\'\' name=\'dados_pagamento\'>" +
+                    "<input type=\'hidden\' name=\'_nonce_payment\' value=\'' . wp_create_nonce('payment_user') . '\' />" +
                     "<div id=\'exibeCartao\'></div>" +
                     "<div class=\'clear\'></div>" +
                     "<div class=\'tituloInput\' style=\'margin-top: -6px;\'>Titular do cartão - Como se encontra no mesmo (*)</div>" +
@@ -506,48 +507,56 @@ class WC_Serveloja_Gateway extends WC_Payment_Gateway {
         $order = wc_get_order( $order_id );
 
         echo $this->wcsvl_generate_serveloja_form($order_id);
-        
+
         if (isset($_POST['finalizar'])) {
-            $dados = array(
-                "Bandeira"         => strtoupper($_POST['Bandeira']),
-                "CpfCnpjComprador" => preg_replace("/[^0-9]/", "", $_POST['CpfCnpjComprador']),
-                "nmTitular"        => strtoupper($_POST['nmTitular']), 
-                "NrCartao"         => preg_replace("/[^0-9]/", "", $_POST['NrCartao']),
-                "CodSeguranca"     => $_POST['CodSeguranca'],
-                "DataValidade"     => $_POST['DataValidade'],
-                "Valor"            => $_POST['Valor'],
-                "QtParcela"        => $_POST['QtParcela'],
-                "SenhaCartao"      => $_POST['SenhaCartao'],
-                "DDDCelular"       => $_POST['DDDCelular'],
-                "NrCelular"        => preg_replace("/[^0-9]/", "", $_POST['NrCelular']),
-                "DsObservacao"     => "Venda de produtos na loja utilizando Woocommerce Serveloja. Número do pedido: #" . $order->get_order_number()
-            );
+            if (wp_verify_nonce($_POST['_nonce_payment'], 'payment_user')) {
+                $dados = array(
+                    "Bandeira"         => strtoupper(sanitize_text_field($_POST['Bandeira'])),
+                    "CpfCnpjComprador" => preg_replace("/[^0-9]/", "", sanitize_text_field($_POST['CpfCnpjComprador'])),
+                    "nmTitular"        => strtoupper(sanitize_text_field($_POST['nmTitular'])),
+                    "NrCartao"         => preg_replace("/[^0-9]/", "", sanitize_text_field($_POST['NrCartao'])),
+                    "CodSeguranca"     => sanitize_text_field($_POST['CodSeguranca']),
+                    "DataValidade"     => sanitize_text_field($_POST['DataValidade']),
+                    "Valor"            => sanitize_text_field($_POST['Valor']),
+                    "QtParcela"        => sanitize_text_field($_POST['QtParcela']),
+                    "SenhaCartao"      => sanitize_text_field($_POST['SenhaCartao']),
+                    "DDDCelular"       => sanitize_text_field($_POST['DDDCelular']),
+                    "NrCelular"        => preg_replace("/[^0-9]/", "", sanitize_text_field($_POST['NrCelular'])),
+                    "DsObservacao"     => "Venda de produtos na loja utilizando Woocommerce Serveloja. Número do pedido: #" . $order->get_order_number()
+                );
 
-            // envia dados via API
-            $resposta = WC_Serveloja_API::wcsvl_metodos_post('Vendas/EfetuarVendaCredito', $dados, $this->wcsvl_apl_authorization(), $this->wcsvl_apl_applicatioId());
-            $resultado = json_decode($resposta["body"], true);
+                // envia dados via API
+                $resposta = WC_Serveloja_API::wcsvl_metodos_post('Vendas/EfetuarVendaCredito', $dados, $this->wcsvl_apl_authorization(), $this->wcsvl_apl_applicatioId());
+                $resultado = json_decode($resposta["body"], true);
 
-            if ($resultado['HttpStatusCode'] == 200) {
-                // adiciona status na loja
-                $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper($_POST['Bandeira']) . ' através do Woocommerce Serveloja. Código da transação: ' . $resultado['Container'] . '.', 'woocommerce-serveloja' ));
-                // reduz estoque, se houver
-                $order->reduce_order_stock();
-                // limpa carrinho
-                $woocommerce->cart->empty_cart();
-                wc_enqueue_js('
-                    $(document).ready(function () {
-                        $("#formPagamento").hide();
-                        wcsvl_modal("sucesso", "Sucesso", "Sua compra foi realizada com sucesso. Muito obrigado por utilizar os serviços da <b>Serveloja</b>", "' . get_option('home') . esc_url('/loja') . '", "bgModal");
-                    });
-                ');
+                if ($resultado['HttpStatusCode'] == 200) {
+                    // adiciona status na loja
+                    $order->update_status('completed', __('Pagamento realizado com cartão ' . strtoupper(sanitize_text_field($_POST['Bandeira'])) . ' através do Woocommerce Serveloja. Código da transação: ' . $resultado['Container'] . '.', 'woocommerce-serveloja' ));
+                    // reduz estoque, se houver
+                    $order->reduce_order_stock();
+                    // limpa carrinho
+                    $woocommerce->cart->empty_cart();
+                    wc_enqueue_js('
+                        $(document).ready(function () {
+                            $("#formPagamento").hide();
+                            wcsvl_modal("sucesso", "Sucesso", "Sua compra foi realizada com sucesso. Muito obrigado por utilizar os serviços da <b>Serveloja</b>", "' . get_option('home') . esc_url('/loja') . '", "bgModal");
+                        });
+                    ');
+                } else {
+                    wc_enqueue_js('
+                        $(document).ready(function () {
+                            wcsvl_modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resultado['Mensagem'])) . '", "", "bgModal_interno");
+                        });
+                    ');
+                }
             } else {
                 wc_enqueue_js('
                     $(document).ready(function () {
-                        wcsvl_modal("erro", "Algo está errado...", "' . trim(preg_replace('/\s\s+/', ' ', $resultado['Mensagem'])) . '", "", "bgModal_interno");
+                        wcsvl_modal("erro", "Algo está errado...", "Não foi possível verificar o código de autorização. Tente novamente", "", "bgModal_interno");
                     });
                 ');
             }
         }
     }
-    
+
 } ?>
